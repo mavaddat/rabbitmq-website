@@ -1,5 +1,5 @@
 <!--
-Copyright (c) 2007-2023 VMware, Inc. or its affiliates.
+Copyright (c) 2005-2024 Broadcom. All Rights Reserved. The term "Broadcom" refers to Broadcom Inc. and/or its subsidiaries.
 
 All rights reserved. This program and the accompanying materials
 are made available under the terms of the under the Apache License,
@@ -23,15 +23,16 @@ RabbitMQ is multi-tenant system: connections, exchanges, queues, bindings, user 
 policies and some other things belong to **virtual hosts**, logical groups of
 entities. If you are familiar with [virtual hosts in Apache](https://httpd.apache.org/docs/2.4/vhosts/)
 or [server blocks in Nginx](https://www.nginx.com/resources/wiki/start/topics/examples/server_blocks/), the idea is similar.
+
 There is, however, one important difference: virtual hosts in Apache are defined
 in the configuration file; that's not the case with RabbitMQ: virtual hosts are
-[created](#creating) and [deleted](#deleting) using `rabbitmqctl` or HTTP API instead.
+[created](#creating) and [deleted](#deleting) using `rabbitmqctl` or the HTTP API instead.
 
 ## <a id="logical-separation" class="anchor" href="#logical-separation">Logical and Physical Separation</a>
 
 Virtual hosts provide logical grouping and separation of
 resources. Separation of physical resources is not a goal of virtual
-hosts and should be considered an implementation detail.
+hosts, although [certain resources can be limited](#limits) for individual virtual hosts.
 
 For example, [resource permissions](./access-control.html) in RabbitMQ are
 scoped per virtual host. A user doesn't have global permissions, only
@@ -168,6 +169,22 @@ Virtual host metadata is returned by the `GET /api/vhosts/{name}` endpoint:
 <pre class="lang-bash">
 curl -u userename:pa$sw0rD -X GET http://rabbitmq.local:15672/api/vhosts/qa1
 </pre>
+
+
+## <a id="default-queue-type" class="anchor" href="#default-queue-type">Default Queue Type</a>
+
+When a client declares a queue without explicitly specifying its type, a configurable default
+type is used. The default can be overridden by specifying it in virtual host metadata (see above).
+
+Supported queue types are:
+
+ * "quorum"
+ * "stream"
+ * "classic"
+
+The default is only effective for new queue declarations; updating the default will not affect
+queue type of any existing queues or streams because queue type is immutable and cannot
+be changed after declaration.
 
 
 ## <a id="deleting" class="anchor" href="#deleting">Deleting a Virtual Host</a>

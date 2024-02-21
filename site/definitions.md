@@ -1,5 +1,5 @@
 <!--
-Copyright (c) 2007-2023 VMware, Inc. or its affiliates.
+Copyright (c) 2005-2024 Broadcom. All Rights Reserved. The term "Broadcom" refers to Broadcom Inc. and/or its subsidiaries.
 
 All rights reserved. This program and the accompanying materials
 are made available under the terms of the under the Apache License,
@@ -31,7 +31,7 @@ Every node in a cluster has its own replica of all definitions. When a part of d
 the update is performed on all nodes in a single transaction. This means that
 in practice, definitions can be exported from any cluster node with the same result.
 
-[VMware RabbitMQ](https://docs.vmware.com/en/VMware-Tanzu-RabbitMQ-for-Kubernetes/index.html) supports [Warm Standby Replication](https://docs.vmware.com/en/VMware-RabbitMQ-for-Kubernetes/1.4/rmq/GUID-standby-replication.html) to a remote cluster,
+[VMware RabbitMQ](https://docs.vmware.com/en/VMware-Tanzu-RabbitMQ-for-Kubernetes/index.html) supports [Warm Standby Replication](https://docs.vmware.com/en/VMware-RabbitMQ-for-Kubernetes/1/rmq/standby-replication.html) to a remote cluster,
 which makes it easy to run a warm standby cluster for disaster recovery.
 
 Definition import on node boot is the recommended way of [pre-configuring nodes at deployment time](#import-on-boot).
@@ -128,11 +128,12 @@ Modern releases support definition import directly in the core,
 without the need to [preconfigure](plugins.html#enabled-plugins-file) the [management plugin](management.html).
 
 To import definitions from a local file on node boot,
-set the `load_definitions` config key to a path of a previously exported JSON file with definitions:
+point the `definitions.local.path` config key to a path of a previously exported JSON file with definitions:
 
 <pre class="lang-ini">
 # Does not require management plugin to be enabled.
-load_definitions = /path/to/definitions/file.json
+definitions.import_backend = local_filesystem
+definitions.local.path = /path/to/definitions/defs.json
 </pre>
 
 Definitions can be imported from a URL accessible over HTTPS on node boot.
@@ -166,7 +167,7 @@ The below snippet demonstrates how the definitions file can be modified to
     "users": [
         {
             "name": "guest",
-            "password": "guest",
+            "password_hash": "9/1i+jKFRpbTRV1PtRnzFFYibT3cEpP92JeZ8YKGtflf4e/u",
             "tags": ["administrator"]
         }
     ],

@@ -1,5 +1,5 @@
 <!--
-Copyright (c) 2007-2023 VMware, Inc. or its affiliates.
+Copyright (c) 2005-2024 Broadcom. All Rights Reserved. The term "Broadcom" refers to Broadcom Inc. and/or its subsidiaries.
 
 All rights reserved. This program and the accompanying materials
 are made available under the terms of the under the Apache License,
@@ -85,7 +85,7 @@ message = ' '.join(sys.argv[1:]) or "Hello World!"
 channel.basic_publish(exchange='',
                       routing_key='hello',
                       body=message)
-print(" [x] Sent %r" % message)
+print(f" [x] Sent {message}")
 </pre>
 
 Our old _receive.py_ script also requires some changes: it needs to
@@ -96,7 +96,7 @@ messages from the queue and perform the task, so let's call it `worker.py`:
 import time
 
 def callback(ch, method, properties, body):
-    print(" [x] Received %r" % body.decode())
+    print(f" [x] Received {body.decode()}")
     time.sleep(body.count(b'.'))
     print(" [x] Done")
 </pre>
@@ -204,7 +204,7 @@ from the worker, once we're done with a task.
 
 <pre class="lang-python">
 def callback(ch, method, properties, body):
-    print(" [x] Received %r" % body.decode())
+    print(f" [x] Received {body.decode()}")
     time.sleep(body.count(b'.') )
     print(" [x] Done")
     ch.basic_ack(delivery_tag = method.delivery_tag)
@@ -278,14 +278,14 @@ and consumer code.
 
 At that point we're sure that the `task_queue` queue won't be lost
 even if RabbitMQ restarts. Now we need to mark our messages as persistent -
-by supplying a `delivery_mode` property with the value of `pika.spec.PERSISTENT_DELIVERY_MODE`
+by supplying a `delivery_mode` property with the value of `pika.DeliveryMode.Persistent`
 
 <pre class="lang-python">
 channel.basic_publish(exchange='',
                       routing_key="task_queue",
                       body=message,
                       properties=pika.BasicProperties(
-                         delivery_mode = pika.spec.PERSISTENT_DELIVERY_MODE
+                         delivery_mode = pika.DeliveryMode.Persistent
                       ))
 </pre>
 
@@ -378,9 +378,9 @@ channel.basic_publish(
     routing_key='task_queue',
     body=message,
     properties=pika.BasicProperties(
-        delivery_mode=pika.spec.PERSISTENT_DELIVERY_MODE
+        delivery_mode=pika.DeliveryMode.Persistent
     ))
-print(" [x] Sent %r" % message)
+print(f" [x] Sent {message}")
 connection.close()
 </pre>
 
@@ -400,7 +400,7 @@ print(' [*] Waiting for messages. To exit press CTRL+C')
 
 
 def callback(ch, method, properties, body):
-    print(" [x] Received %r" % body.decode())
+    print(f" [x] Received {body.decode()}")
     time.sleep(body.count(b'.'))
     print(" [x] Done")
     ch.basic_ack(delivery_tag=method.delivery_tag)

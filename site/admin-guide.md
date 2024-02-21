@@ -1,5 +1,5 @@
 <!--
-Copyright (c) 2007-2023 VMware, Inc. or its affiliates.
+Copyright (c) 2005-2024 Broadcom. All Rights Reserved. The term "Broadcom" refers to Broadcom Inc. and/or its subsidiaries.
 
 All rights reserved. This program and the accompanying materials
 are made available under the terms of the under the Apache License,
@@ -91,9 +91,9 @@ see <a href="./documentation.html">All Documentation Guides</a>.
  * [AMQP 0-9-1 Authentication Mechanisms](authentication.html)
  * [Virtual Hosts](vhosts.html)
  * [Credentials and Passwords](passwords.html)
- * x509 (TLS) [Certificate-based client authentication](https://github.com/rabbitmq/rabbitmq-auth-mechanism-ssl/tree/v3.12.x)
- * [OAuth 2 Support](https://rabbitmq.com/oauth2.html)
- * [OAuth 2 Examples](https://rabbitmq.com/oauth2-examples.html) for common identity providers
+ * x509 (TLS) [Certificate-based client authentication](https://github.com/rabbitmq/rabbitmq-server/tree/v3.12.x/deps/rabbitmq_auth_mechanism_ssl)
+ * [OAuth 2 Support](oauth2.html)
+ * [OAuth 2 Examples](oauth2-examples.html) for common identity providers
  * [LDAP](ldap.html)
  * [Validated User ID](validated-user-id.html)
  * [Authentication Failure Notifications](auth-notification.html)
@@ -118,7 +118,8 @@ see <a href="./documentation.html">All Documentation Guides</a>.
  * [Client Connections](connections.html)
  * [AMQP 0-9-1 Channels](channels.html)
  * [Internal Event Exchange](event-exchange.html)
- * [Per Virtual Host Limits](vhosts.html)
+ * [Per Virtual Host Limits](vhosts.html#limits)
+ * [Per User Limits](user-limits.html)
  * [Message Tracing](firehose.html)
  * [Capturing Traffic with Wireshark](amqp-wireshark.html)
 
@@ -127,7 +128,7 @@ see <a href="./documentation.html">All Documentation Guides</a>.
 
  * [Clustering](clustering.html)
  * [Cluster Formation and Peer Discovery](cluster-formation.html)
- * [Intra-cluster Compression](https://docs.vmware.com/en/VMware-RabbitMQ-for-Kubernetes/1.4/rmq/GUID-clustering-compression-rabbitmq.html)
+ * [Intra-cluster Compression](https://docs.vmware.com/en/VMware-RabbitMQ-for-Kubernetes/1/rmq/standby-replication.html)
 
 ### Replicated Queue Types, Streams, High Availability
 
@@ -167,7 +168,7 @@ see <a href="./documentation.html">All Documentation Guides</a>.
 ## Queue and Consumer Features
 
  * [Queues guide](queues.html)
- * [Classic Queues](classic-queues.html)
+ * [Classic Queues](./classic-queues.html)
  * [Consumers guide](consumers.html)
  * [Queue and Message TTL](ttl.html)
  * [Queue Length Limits](maxlength.html)

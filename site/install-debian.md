@@ -1,5 +1,5 @@
 <!--
-Copyright (c) 2007-2023 VMware, Inc. or its affiliates.
+Copyright (c) 2005-2024 Broadcom. All Rights Reserved. The term "Broadcom" refers to Broadcom Inc. and/or its subsidiaries.
 
 All rights reserved. This program and the accompanying materials
 are made available under the terms of the under the Apache License,
@@ -38,7 +38,7 @@ Key sections of this guide are
  * How to [inspect node and service logs](#server-logs)
 
 [Supported Erlang versions](which-erlang.html) will be provisioned from one of the [modern Erlang apt repositories](#erlang-repositories)
-on [Ubuntu Launchpad](https://launchpad.net/~rabbitmq/+archive/ubuntu/rabbitmq-erlang) or a [Cloudsmith.io](#apt-cloudsmith) mirror.
+on [Launchpad](https://launchpad.net/~rabbitmq) or a [Cloudsmith.io](#apt-cloudsmith) mirror.
 
 Those looking for a more detailed description of the installation steps performed
 should refer to
@@ -74,8 +74,8 @@ i.e. inline with [distribution EOL policy](https://wiki.debian.org/DebianRelease
 
 Currently the list of supported Debian-based distributions includes
 
- * Ubuntu 18.04 through 23.04
- * Debian Buster (10), Bullseye (11), and Sid ("unstable")
+ * Ubuntu 20.04 through 23.04
+ * Debian Bullseye (11), Bookworm (12), and Trixie ("testing")
 
 The package may work on other Debian-based distributions
 if [dependencies](#manual-installation) are satisfied (e.g. using a backports repository)
@@ -100,6 +100,20 @@ apt repositories:
    </tr>
  </thead>
  <tbody>
+  <tr>
+     <td>26.x</td>
+     <td>
+       <ul>
+        <li><a href="#apt-launchpad-erlang">Debian packages of Erlang</a> from Team RabbitMQ on Launchpad</li>
+        <li><a href="#apt-cloudsmith">Debian packages of Erlang</a> from Team RabbitMQ on Cloudsmith.io</li>
+       </ul>
+     </td>
+     <td>
+       <strong>Supported <a href="https://github.com/rabbitmq/rabbitmq-server/releases/tag/v3.12.0">starting with 3.12.0</a></strong>, will be required starting with <code>3.13.0</code>.
+       See <a href="./which-erlang.html">Erlang compatibility guide</a>.
+     </td>
+  </tr>
+
   <tr>
      <td>25.x</td>
      <td>
@@ -163,9 +177,9 @@ sudo apt-get install curl gnupg apt-transport-https -y
 ## Team RabbitMQ's main signing key
 curl -1sLf "https://keys.openpgp.org/vks/v1/by-fingerprint/0A9AF2115F4687BD29803A206B73A36E6026DFCA" | sudo gpg --dearmor | sudo tee /usr/share/keyrings/com.rabbitmq.team.gpg > /dev/null
 ## Community mirror of Cloudsmith: modern Erlang repository
-curl -1sLf https://ppa1.novemberain.com/gpg.E495BB49CC4BBE5B.key | sudo gpg --dearmor | sudo tee /usr/share/keyrings/rabbitmq.E495BB49CC4BBE5B.gpg > /dev/null
+curl -1sLf https://github.com/rabbitmq/signing-keys/releases/download/3.0/cloudsmith.rabbitmq-erlang.E495BB49CC4BBE5B.key | sudo gpg --dearmor | sudo tee /usr/share/keyrings/rabbitmq.E495BB49CC4BBE5B.gpg > /dev/null
 ## Community mirror of Cloudsmith: RabbitMQ repository
-curl -1sLf https://ppa1.novemberain.com/gpg.9F4587F226208342.key | sudo gpg --dearmor | sudo tee /usr/share/keyrings/rabbitmq.9F4587F226208342.gpg > /dev/null
+curl -1sLf https://github.com/rabbitmq/signing-keys/releases/download/3.0/cloudsmith.rabbitmq-server.9F4587F226208342.key | sudo gpg --dearmor | sudo tee /usr/share/keyrings/rabbitmq.9F4587F226208342.gpg > /dev/null
 
 ## Add apt repositories maintained by Team RabbitMQ
 sudo tee /etc/apt/sources.list.d/rabbitmq.list &lt;&lt;EOF
@@ -174,10 +188,18 @@ sudo tee /etc/apt/sources.list.d/rabbitmq.list &lt;&lt;EOF
 deb [signed-by=/usr/share/keyrings/rabbitmq.E495BB49CC4BBE5B.gpg] https://ppa1.novemberain.com/rabbitmq/rabbitmq-erlang/deb/ubuntu jammy main
 deb-src [signed-by=/usr/share/keyrings/rabbitmq.E495BB49CC4BBE5B.gpg] https://ppa1.novemberain.com/rabbitmq/rabbitmq-erlang/deb/ubuntu jammy main
 
+# another mirror for redundancy
+deb [signed-by=/usr/share/keyrings/rabbitmq.E495BB49CC4BBE5B.gpg] https://ppa2.novemberain.com/rabbitmq/rabbitmq-erlang/deb/ubuntu jammy main
+deb-src [signed-by=/usr/share/keyrings/rabbitmq.E495BB49CC4BBE5B.gpg] https://ppa2.novemberain.com/rabbitmq/rabbitmq-erlang/deb/ubuntu jammy main
+
 ## Provides RabbitMQ
 ##
 deb [signed-by=/usr/share/keyrings/rabbitmq.9F4587F226208342.gpg] https://ppa1.novemberain.com/rabbitmq/rabbitmq-server/deb/ubuntu jammy main
 deb-src [signed-by=/usr/share/keyrings/rabbitmq.9F4587F226208342.gpg] https://ppa1.novemberain.com/rabbitmq/rabbitmq-server/deb/ubuntu jammy main
+
+# another mirror for redundancy
+deb [signed-by=/usr/share/keyrings/rabbitmq.9F4587F226208342.gpg] https://ppa2.novemberain.com/rabbitmq/rabbitmq-server/deb/ubuntu jammy main
+deb-src [signed-by=/usr/share/keyrings/rabbitmq.9F4587F226208342.gpg] https://ppa2.novemberain.com/rabbitmq/rabbitmq-server/deb/ubuntu jammy main
 EOF
 
 ## Update package indices
@@ -225,9 +247,9 @@ sudo apt-get install curl gnupg apt-transport-https -y
 ## Team RabbitMQ's main signing key
 curl -1sLf "https://keys.openpgp.org/vks/v1/by-fingerprint/0A9AF2115F4687BD29803A206B73A36E6026DFCA" | sudo gpg --dearmor | sudo tee /usr/share/keyrings/com.rabbitmq.team.gpg > /dev/null
 ## Community mirror of Cloudsmith: modern Erlang repository
-curl -1sLf https://ppa1.novemberain.com/gpg.E495BB49CC4BBE5B.key | sudo gpg --dearmor | sudo tee /usr/share/keyrings/rabbitmq.E495BB49CC4BBE5B.gpg > /dev/null
+curl -1sLf https://github.com/rabbitmq/signing-keys/releases/download/3.0/cloudsmith.rabbitmq-erlang.E495BB49CC4BBE5B.key | sudo gpg --dearmor | sudo tee /usr/share/keyrings/rabbitmq.E495BB49CC4BBE5B.gpg > /dev/null
 ## Community mirror of Cloudsmith: RabbitMQ repository
-curl -1sLf https://ppa1.novemberain.com/gpg.9F4587F226208342.key | sudo gpg --dearmor | sudo tee /usr/share/keyrings/rabbitmq.9F4587F226208342.gpg > /dev/null
+curl -1sLf https://github.com/rabbitmq/signing-keys/releases/download/3.0/cloudsmith.rabbitmq-server.9F4587F226208342.key | sudo gpg --dearmor | sudo tee /usr/share/keyrings/rabbitmq.9F4587F226208342.gpg > /dev/null
 </pre>
 
 See the [guide on signatures](signatures.html) to learn more.
@@ -247,10 +269,18 @@ pattern:
 deb [signed-by=/usr/share/keyrings/rabbitmq.E495BB49CC4BBE5B.gpg] https://ppa1.novemberain.com/rabbitmq/rabbitmq-erlang/deb/ubuntu $distribution main
 deb-src [signed-by=/usr/share/keyrings/rabbitmq.E495BB49CC4BBE5B.gpg] https://ppa1.novemberain.com/rabbitmq/rabbitmq-erlang/deb/ubuntu $distribution main
 
+# another mirror for redundancy
+deb [signed-by=/usr/share/keyrings/rabbitmq.E495BB49CC4BBE5B.gpg] https://ppa2.novemberain.com/rabbitmq/rabbitmq-erlang/deb/ubuntu $distribution main
+deb-src [signed-by=/usr/share/keyrings/rabbitmq.E495BB49CC4BBE5B.gpg] https://ppa2.novemberain.com/rabbitmq/rabbitmq-erlang/deb/ubuntu $distribution main
+
 ## Provides RabbitMQ from a Cloudsmith mirror
 ##
 deb [signed-by=/usr/share/keyrings/rabbitmq.9F4587F226208342.gpg] https://ppa1.novemberain.com/rabbitmq/rabbitmq-server/deb/ubuntu $distribution main
 deb-src [signed-by=/usr/share/keyrings/rabbitmq.9F4587F226208342.gpg] https://ppa1.novemberain.com/rabbitmq/rabbitmq-server/deb/ubuntu $distribution main
+
+# another mirror for redundancy
+deb [signed-by=/usr/share/keyrings/rabbitmq.9F4587F226208342.gpg] https://ppa2.novemberain.com/rabbitmq/rabbitmq-server/deb/ubuntu $distribution main
+deb-src [signed-by=/usr/share/keyrings/rabbitmq.9F4587F226208342.gpg] https://ppa2.novemberain.com/rabbitmq/rabbitmq-server/deb/ubuntu $distribution main
 </pre>
 
 The next couple of sections discusses what distribution and component values
@@ -284,7 +314,7 @@ with the RabbitMQ apt repositories.
 | Ubuntu 22.04    | `jammy`      |
 | Ubuntu 20.04    | `focal`      |
 | Ubuntu 18.04    | `bionic`     |
-| Debian Buster   | `buster`     |
+| Debian Bookworm | `bullseye`   |
 | Debian Bullseye | `bullseye`   |
 | Debian Sid      | `bullseye`   |
 
@@ -297,28 +327,43 @@ sudo tee /etc/apt/sources.list.d/rabbitmq.list &lt;&lt;EOF
 deb [signed-by=/usr/share/keyrings/rabbitmq.E495BB49CC4BBE5B.gpg] https://ppa1.novemberain.com/rabbitmq/rabbitmq-erlang/deb/ubuntu $distribution main
 deb-src [signed-by=/usr/share/keyrings/rabbitmq.E495BB49CC4BBE5B.gpg] https://ppa1.novemberain.com/rabbitmq/rabbitmq-erlang/deb/ubuntu $distribution main
 
+# another mirror for redundancy
+deb [signed-by=/usr/share/keyrings/rabbitmq.E495BB49CC4BBE5B.gpg] https://ppa2.novemberain.com/rabbitmq/rabbitmq-erlang/deb/ubuntu $distribution main
+deb-src [signed-by=/usr/share/keyrings/rabbitmq.E495BB49CC4BBE5B.gpg] https://ppa2.novemberain.com/rabbitmq/rabbitmq-erlang/deb/ubuntu $distribution main
+
 ## Provides RabbitMQ from a Cloudsmith mirror
 ##
 deb [signed-by=/usr/share/keyrings/rabbitmq.9F4587F226208342.gpg] https://ppa1.novemberain.com/rabbitmq/rabbitmq-server/deb/ubuntu $distribution main
 deb-src [signed-by=/usr/share/keyrings/rabbitmq.9F4587F226208342.gpg] https://ppa1.novemberain.com/rabbitmq/rabbitmq-server/deb/ubuntu $distribution main
+
+# another mirror for redundancy
+deb [signed-by=/usr/share/keyrings/rabbitmq.9F4587F226208342.gpg] https://ppa2.novemberain.com/rabbitmq/rabbitmq-server/deb/ubuntu $distribution main
+deb-src [signed-by=/usr/share/keyrings/rabbitmq.9F4587F226208342.gpg] https://ppa2.novemberain.com/rabbitmq/rabbitmq-server/deb/ubuntu $distribution main
 EOF
 </pre>
 
 where `$distribution` is the name of the Debian or Ubuntu distribution used (see the table above).
 
-For example, on Debian Buster it would be
+For example, on Debian Bullseye and Bookworm it would be
 
 <pre class="lang-bash">
 sudo tee /etc/apt/sources.list.d/rabbitmq.list &lt;&lt;EOF
 ## Provides modern Erlang/OTP releases from a Cloudsmith mirror
 ##
-deb [signed-by=/usr/share/keyrings/rabbitmq.E495BB49CC4BBE5B.gpg] https://ppa1.novemberain.com/rabbitmq/rabbitmq-erlang/deb/debian buster main
-deb-src [signed-by=/usr/share/keyrings/rabbitmq.E495BB49CC4BBE5B.gpg] https://ppa1.novemberain.com/rabbitmq/rabbitmq-erlang/deb/debian buster main
+deb [signed-by=/usr/share/keyrings/rabbitmq.E495BB49CC4BBE5B.gpg] https://ppa1.novemberain.com/rabbitmq/rabbitmq-erlang/deb/debian bullseye main
+deb-src [signed-by=/usr/share/keyrings/rabbitmq.E495BB49CC4BBE5B.gpg] https://ppa1.novemberain.com/rabbitmq/rabbitmq-erlang/deb/debian bullseye main
+
+deb [signed-by=/usr/share/keyrings/rabbitmq.E495BB49CC4BBE5B.gpg] https://ppa2.novemberain.com/rabbitmq/rabbitmq-erlang/deb/debian bullseye main
+deb-src [signed-by=/usr/share/keyrings/rabbitmq.E495BB49CC4BBE5B.gpg] https://ppa2.novemberain.com/rabbitmq/rabbitmq-erlang/deb/debian bullseye main
 
 ## Provides RabbitMQ from a Cloudsmith mirror
 ##
-deb [signed-by=/usr/share/keyrings/rabbitmq.9F4587F226208342.gpg] https://ppa1.novemberain.com/rabbitmq/rabbitmq-server/deb/debian buster main
-deb-src [signed-by=/usr/share/keyrings/rabbitmq.9F4587F226208342.gpg] https://ppa1.novemberain.com/rabbitmq/rabbitmq-server/deb/debian buster main
+deb [signed-by=/usr/share/keyrings/rabbitmq.9F4587F226208342.gpg] https://ppa1.novemberain.com/rabbitmq/rabbitmq-server/deb/debian bullseye main
+deb-src [signed-by=/usr/share/keyrings/rabbitmq.9F4587F226208342.gpg] https://ppa1.novemberain.com/rabbitmq/rabbitmq-server/deb/debian bullseye main
+
+# another mirror for redundancy
+deb [signed-by=/usr/share/keyrings/rabbitmq.9F4587F226208342.gpg] https://ppa2.novemberain.com/rabbitmq/rabbitmq-server/deb/debian bullseye main
+deb-src [signed-by=/usr/share/keyrings/rabbitmq.9F4587F226208342.gpg] https://ppa2.novemberain.com/rabbitmq/rabbitmq-server/deb/debian bullseye main
 EOF
 </pre>
 
@@ -369,7 +414,9 @@ mirror used in the examples above:
 # /etc/apt/preferences.d/erlang
 Package: erlang*
 Pin: origin ppa1.novemberain.com
-Pin-Priority: 1000
+# Note: priority of 1001 (greater than 1000) allows for downgrading.
+# To make package downgrading impossible, use a value of 999
+Pin-Priority: 1001
 </pre>
 
 The following is similar to the example above but prefers Launchpad:
@@ -378,7 +425,9 @@ The following is similar to the example above but prefers Launchpad:
 # /etc/apt/preferences.d/erlang
 Package: erlang*
 Pin: origin ppa.launchpad.net
-Pin-Priority: 1000
+# Note: priority of 1001 (greater than 1000) allows for downgrading.
+# To make package downgrading impossible, use a value of 999
+Pin-Priority: 1001
 </pre>
 
 Effective package pinning policy can be verified with
@@ -393,8 +442,10 @@ The following preference file example will pin all `erlang-*` packages to `25.3`
 <pre class="lang-ini">
 # /etc/apt/preferences.d/erlang
 Package: erlang*
-Pin: version 1:25.3
-Pin-Priority: 1000
+Pin: version 1:25.3.2.5-1
+# Note: priority of 1001 (greater than 1000) allows for downgrading.
+# To make package downgrading impossible, use a value of 999
+Pin-Priority: 1001
 </pre>
 
 The following preference file example will pin `rabbitmq-server` package to `&version-server;`
@@ -403,19 +454,10 @@ The following preference file example will pin `rabbitmq-server` package to `&ve
 <pre class="lang-ini">
 # /etc/apt/preferences.d/rabbitmq
 Package: rabbitmq-server
-Pin: version 1:&version-server;
-Pin-Priority: 1000
-</pre>
-
-
-In the example below, the `esl-erlang` package is pinned to `24.3.1`
-(assuming [package epoch](https://www.debian.org/doc/debian-policy/ch-controlfields.html#s-f-Version) for the package is 1):
-
-<pre class="lang-ini">
-# /etc/apt/preferences.d/erlang
-Package: esl-erlang
-Pin: version 1:24.3.1
-Pin-Priority: 1000
+Pin: version 1:&version-server;-&serverDebMinorVersion;
+# Note: priority of 1001 (greater than 1000) allows for downgrading.
+# To make package downgrading impossible, use a value of 999
+Pin-Priority: 1001
 </pre>
 
 
@@ -630,7 +672,7 @@ Redirecting to /bin/systemctl status rabbitmq-server.service
            └─2861 inet_gethost 4
 
 Dec 26 10:21:30 localhost.localdomain rabbitmq-server[957]: ##  ##
-Dec 26 10:21:30 localhost.localdomain rabbitmq-server[957]: ##  ##      RabbitMQ 3.11.13. Copyright (c) 2007-2023 VMware, Inc. or its affiliates.
+Dec 26 10:21:30 localhost.localdomain rabbitmq-server[957]: ##  ##      RabbitMQ 3.12.0. Copyright (c) 2005-2024 Broadcom. All Rights Reserved. The term "Broadcom" refers to Broadcom Inc. and/or its subsidiaries.
 Dec 26 10:21:30 localhost.localdomain rabbitmq-server[957]: ##########  Licensed under the MPL 2.0. Website: https://www.rabbitmq.com/
 Dec 26 10:21:30 localhost.localdomain rabbitmq-server[957]: ######  ##
 Dec 26 10:21:30 localhost.localdomain rabbitmq-server[957]: ##########  Logs: /var/log/rabbitmq/rabbit@localhost.log
@@ -688,7 +730,7 @@ The output will look similar to this:
 
 <pre class="lang-ini">
 Dec 26 11:03:04 localhost rabbitmq-server[968]: ##  ##
-Dec 26 11:03:04 localhost rabbitmq-server[968]: ##  ##      RabbitMQ 3.11.15. Copyright (c) 2007-2023 VMware, Inc. or its affiliates.
+Dec 26 11:03:04 localhost rabbitmq-server[968]: ##  ##      RabbitMQ 3.12.0. Copyright (c) 2005-2024 Broadcom. All Rights Reserved. The term "Broadcom" refers to Broadcom Inc. and/or its subsidiaries.
 Dec 26 11:03:04 localhost rabbitmq-server[968]: ##########  Licensed under the MPL 2.0. Website: https://www.rabbitmq.com/
 Dec 26 11:03:04 localhost rabbitmq-server[968]: ######  ##
 Dec 26 11:03:04 localhost rabbitmq-server[968]: ##########  Logs: /var/log/rabbitmq/rabbit@localhost.log
@@ -714,31 +756,24 @@ By default, the package will set up `logrotate` to run weekly on files located i
 This additional section covers installation of modern Erlang packages from Launchpad. To install
 modern Erlang and RabbitMQ, please refer to [Install RabbitMQ from a Cloudsmith mirror](#apt-cloudsmith).
 
-### Modern Erlang on Ubuntu and Debian
+### Modern Erlang on Ubuntu
 
 Standard Debian and Ubuntu repositories tend to provide outdated versions of Erlang/OTP. Team RabbitMQ maintains
-an apt repository that includes [packages of latest Erlang/OTP releases](https://launchpad.net/~rabbitmq/+archive/ubuntu/rabbitmq-erlang)
-on Launchpad.
+several apt repositories that includes [packages of latest Erlang/OTP releases](https://launchpad.net/~rabbitmq/)
+on Launchpad:
 
-RabbitMQ core team focus around package is on the current and prior release of Debian-based distributions,
-which is in line with [distribution EOL policy](https://wiki.debian.org/DebianReleases).
+ * For [the latest Erlang](https://launchpad.net/~rabbitmq/+archive/ubuntu/rabbitmq-erlang) major (currently 26.x)
+ * For [Erlang 25.3.x](https://launchpad.net/~rabbitmq/+archive/ubuntu/rabbitmq-erlang-25)
+ * For [Erlang 24.3.x](https://launchpad.net/~rabbitmq/+archive/ubuntu/rabbitmq-erlang-24)
 
-The Erlang packages currently support the following Ubuntu distributions:
+The Erlang repositores on Launchpad currently target the following Ubuntu distributions:
 
  * Ubuntu 22.04 (Jammy)
  * Ubuntu 20.04 (Focal)
  * Ubuntu 18.04 (Bionic)
 
-and the following Debian releases:
-
- * Debian 11 (Bullseye)
- * Debian 10 (Buster)
-
-Launchpad PPA only provides the most recent release of Erlang 25.3.x.
-Cloudsmith and its mirror currently provides the most recent patch release in the following Erlang series:
-
- * 25.x
- * 24.x
+Alternatively, Cloudsmith and its mirror (see above) supports the same versions
+and also can be used on Debian distributions, not just Ubuntu.
 
 In order to use the repository, it is necessary to
 
@@ -763,7 +798,7 @@ This will enable apt to trust packages signed by that key.
 
 <pre class="lang-bash">
 # primary RabbitMQ signing key
-curl -1sLf "https://github.com/rabbitmq/signing-keys/releases/download/2.0/rabbitmq-release-signing-key.asc" | sudo gpg --dearmor | sudo tee /usr/share/keyrings/com.github.rabbitmq.signing.gpg > /dev/null
+curl -1sLf "https://github.com/rabbitmq/signing-keys/releases/download/3.0/rabbitmq-release-signing-key.asc" | sudo gpg --dearmor | sudo tee /usr/share/keyrings/com.github.rabbitmq.signing.gpg > /dev/null
 
 # Launchpad PPA signing key for apt
 curl -1sLf "https://keyserver.ubuntu.com/pks/lookup?op=get&amp;search=0xf77f1eda57ebb1cc" | sudo gpg --dearmor | sudo tee /usr/share/keyrings/net.launchpad.ppa.rabbitmq.erlang.gpg > /dev/null
@@ -809,7 +844,7 @@ supported (indexed) by the Erlang Debian packages maintained by Team RabbitMQ:
  * `jammy` for Ubuntu 22.04
  * `focal` for Ubuntu 20.04
  * `bionic` for Ubuntu 18.04
- * `bionic` for Debian Buster, Bullseye, and Sid
+ * `bionic` for Debian Bullseye, Bookworm, and Sid
 
 However, not all distributions are covered (indexed).
 But there are good news: since the package indexed for these distributions is identical,
@@ -826,8 +861,8 @@ with the Launchpad repository.
 | Ubuntu 22.04    | `jammy`   |
 | Ubuntu 20.04    | `focal`   |
 | Ubuntu 18.04    | `bionic`  |
+| Debian Bookworm | `bionic`  |
 | Debian Bullseye | `bionic`  |
-| Debian Buster   | `bionic`  |
 | Debian Sid      | `bionic`  |
 
 ### <a id="installing-erlang-package" class="anchor" href="#installing-erlang-package">Install Erlang Packages</a>

@@ -1,5 +1,5 @@
 <!--
-Copyright (c) 2007-2023 VMware, Inc. or its affiliates.
+Copyright (c) 2005-2024 Broadcom. All Rights Reserved. The term "Broadcom" refers to Broadcom Inc. and/or its subsidiaries.
 
 All rights reserved. This program and the accompanying materials
 are made available under the terms of the under the Apache License,
@@ -159,6 +159,9 @@ will be routed to the queue "search-indexing-online". In
 other words, the default exchange makes it seem like it
 is possible to deliver messages directly to queues, even
 though that is not technically what is happening.
+
+The default exchange, in RabbitMQ, does not allow bind/unbind operations.
+Binding operations to the default exchange will result in an error.
 
 ### <a id="exchange-direct" class="anchor" href="#exchange-direct">Direct Exchange</a>
 

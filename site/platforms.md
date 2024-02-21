@@ -1,5 +1,5 @@
 <!--
-Copyright (c) 2007-2023 VMware, Inc. or its affiliates.
+Copyright (c) 2005-2024 Broadcom. All Rights Reserved. The term "Broadcom" refers to Broadcom Inc. and/or its subsidiaries.
 
 All rights reserved. This program and the accompanying materials
 are made available under the terms of the under the Apache License,
@@ -45,7 +45,7 @@ following platforms:
 ## <a id="commercial-support" class="anchor" href="#commercial-support">Commercially Supported Platforms</a>
 
 A list of platforms for which you can purchase commercial support for
-RabbitMQ is available in the [commercial RabbitMQ distribution documentation](http://rabbitmq.docs.pivotal.io/index.html).
+RabbitMQ is available in the [Open Source RabbitMQ Support by VMware page](https://tanzu.vmware.com/rabbitmq/oss).
 
 
 ## <a id="windows" class="anchor" href="#windows">Windows</a>

@@ -1,5 +1,5 @@
 <!--
-Copyright (c) 2007-2023 VMware, Inc. or its affiliates.
+Copyright (c) 2005-2024 Broadcom. All Rights Reserved. The term "Broadcom" refers to Broadcom Inc. and/or its subsidiaries.
 
 All rights reserved. This program and the accompanying materials
 are made available under the terms of the under the Apache License,
@@ -46,13 +46,6 @@ Feel free to join our [Discord community server](https://rabbitmq.com/discord/).
 The channel offers free of charge, best effort support from the community.
 There is no guarantee of response or specific turnaround time.
 
-### Community Slack
-
-Feel free to join our [RabbitMQ community Slack](https://rabbitmq.com/slack/).
-
-The channel offers free of charge, best effort support from the community.
-There is no guarantee of response or specific turnaround time.
-
 ### GitHub
 
 Most of RabbitMQ development happens in the open under the [rabbitmq GitHub organization](https://github.com/rabbitmq).
@@ -82,12 +75,12 @@ There's a [Web interface to Libera](https://web.libera.chat/) if you don't have 
 
 ### <a id="security" class="anchor" href="#security">Responsible Disclosure of Vulnerabilities</a>
 
-Please use [GitHub Security Advisories](https://docs.github.com/en/code-security/security-advisories/guidance-on-reporting-and-writing/privately-reporting-a-security-vulnerability) or email [security@rabbitmq.com](mailto:security@rabbitmq.com) for responsible disclosure
+Please use [GitHub Security Advisories](https://docs.github.com/en/code-security/security-advisories/guidance-on-reporting-and-writing/privately-reporting-a-security-vulnerability) or email [rabbitmq-core@groups.vmware.com](mailto:rabbitmq-core@groups.vmware.com) for responsible disclosure
 of vulnerabilities. All emails not related to vulnerability disclosure will be ignored.
 
 ### Contacting the Core Team in Private
 
-To contact the team privately, please email on [info@rabbitmq.com](mailto:info@rabbitmq.com).
+To contact the team privately, please email on [rabbitmq-core@groups.vmware.com](mailto:rabbitmq-core@groups.vmware.com).
 Please note that this is **not a support channel**.
 
 The list **must only** be used for things that need to be discussed in private.

@@ -1,5 +1,5 @@
 <!--
-Copyright (c) 2007-2023 VMware, Inc. or its affiliates.
+Copyright (c) 2005-2024 Broadcom. All Rights Reserved. The term "Broadcom" refers to Broadcom Inc. and/or its subsidiaries.
 
 All rights reserved. This program and the accompanying materials
 are made available under the terms of the under the Apache License,
@@ -548,6 +548,63 @@ Runtime's memory allocator behavior can be tuned, please refer to
 <a href="http://erlang.org/doc/man/erl.html" target="_blank" rel="noopener noreferrer">erl</a> and
 <a href="http://erlang.org/doc/man/erts_alloc.html" target="_blank" rel="noopener noreferrer">erts_alloc</a>
 documentation.
+
+
+## <a id="page-cache" class="anchor" href="#page-cache">Kernel Page Cache</a>
+
+Besides the memory allocated and used directly by a RabbitMQ node, files read by that node
+can be cached by the operating system. This cache improves I/O operation efficiency and is
+evicted (cleared) when the OS detects that a high percentage of available memory is in used.
+
+Workloads that use [RabbitMQ streams](./streams.html) often lead to large kernel page cache size,
+in particular when consumers access messages that span days or weeks.
+
+Some monitoring tools do not include the size of page cache into process monitoring metrics. Others
+add it to the residential set size (RSS)
+footprint of the process. This can lead to confusion: the **page cache is not maintained or controlled
+by RabbitMQ nodes. It is maintained, controlled and evicted (cleared) by the operating system kernel**.
+
+This is particularly [common in Kubernetes-based](https://github.com/kubernetes/kubernetes/issues/43916) deployments
+[that do not use cgroup v2](https://kubernetes.io/blog/2022/08/31/cgroupv2-ga-1-25/)) and run RabbitMQ
+using container images based on [older distributions](https://kubernetes.io/blog/2022/08/31/cgroupv2-ga-1-25/#how-do-you-use-cgroup-v2) that use cgroups v1.
+
+Kubernetes 1.25.0 and the following distributions are highly recommended as they
+use a more reasonable approach to kernel page cache memory accounting:
+
+ * CentOS Stream 9 or later
+ * Fedora 31 or later
+ * Ubuntu 21.10 or later
+ * Debian 11 Bullseye or later
+
+
+### What Does a Large Page Cache Size Tell Us About a Workload?
+
+Usually a large page cache size simply indicates that the workload is I/O heavy and likely uses streams
+with large data sets. It does not indicate a memory leak by the node: the cache will be cleared
+by the kernel when it detects that the system runs low on available memory.
+
+### Inspecting Page Cache without Containerization (in Virtual or Physical Machines)
+
+In non-containerized environments (e.g. RabbitMQ nodes run in virtual machines or on bare metal hardware),
+use
+
+<pre class="lang-bash">
+cat /proc/meminfo | grep -we "Cached"
+</pre>
+
+to inspect the size of the kernel page cache.
+
+### Inspecting Page Cache Size in Containerized Environments
+
+In containerized environments such as Kubernetes, the following two `/sys` pseudo filesystem
+paths can be used to inspect both RSS and page cache footprint:
+
+<pre class="lang-bash">
+cat /sys/fs/cgroup/memory/memory.stat
+cat /sys/fs/cgroup/memory/memory.usage_in_bytes
+</pre>
+
+The two key metrics are named `rss` (for resident set size) and `cache` (for page cache).
 
 
 ## <a id="memory-breakdown-and-monitoring" class="anchor" href="#memory-breakdown-and-monitoring">Memory Use Monitoring</a>

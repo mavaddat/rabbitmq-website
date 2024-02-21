@@ -1,5 +1,5 @@
 <!--
-Copyright (c) 2007-2023 VMware, Inc. or its affiliates.
+Copyright (c) 2005-2024 Broadcom. All Rights Reserved. The term "Broadcom" refers to Broadcom Inc. and/or its subsidiaries.
 
 All rights reserved. This program and the accompanying materials
 are made available under the terms of the under the Apache License,
@@ -23,7 +23,7 @@ This document describes [authentication](#authentication) and [authorisation](#a
 in RabbitMQ. Together they allow the operator to control access to the system.
 
 Different users can be granted access only to specific [virtual hosts](./vhosts.html). Their
-permissions in each virtual hosts also can be limited.
+permissions in each virtual host also can be limited.
 
 RabbitMQ supports two major [authentication mechanisms](#mechanisms)
 as well as several [authentication and authorisation backends](#backends).
@@ -39,10 +39,10 @@ This guide covers a variety of authentication, authorisation and user management
  * How to [authenticate clients using their TLS certificate information](#certificate-authentication)
  * How to limit [access to topics on a topic exchange](#topic-authorisation)
  * [User tags](#user-tags) and how they are used
- * How to [revoke access](#revoke) for a user
+ * How to rotate credentials and [revoke access](#revoke) for a user
  * [Shell escaping](#passwords-and-shell-escaping) of characters in generated passwords
  * How to [pre-create users](#seeding) and their permissions
- * Troubleshooting of [authentication](#troubleshooting-authn) and [authorisation failures](#troubleshooting-authz)
+ * Troubleshooting of [authentication](#troubleshooting-authn) and [authorisation failures](#troubleshooting-authz))
 
 [Password-based](./passwords.html) authentication has a companion guide.
 A closely related topic of [TLS support](./ssl.html) is also covered in a dedicated guide.
@@ -510,9 +510,9 @@ applies to MQTT. For example, if `tonyg` is the
 connected user, the permission `^{username}-.*` is expanded to
 `^tonyg-.*`
 
-If a different authorisation backend (e.g. [LDAP](ldap.html),
-[HTTP](https://github.com/rabbitmq/rabbitmq-auth-backend-http),
-[AMQP](https://github.com/rabbitmq/rabbitmq-auth-backend-amqp),
+f a different authorisation backend (e.g. [LDAP](ldap.html),
+[HTTP](https://github.com/rabbitmq/rabbitmq-server/tree/v3.12.x/deps/rabbitmq_auth_backend_http),
+[AMQP](https://github.com/rabbitmq/rabbitmq-server/tree/v3.12.x/deps/rabbitmq-auth-backend-amqp),
 [OAuth2](oauth2.html)) is used, please refer
 to the documentation of those backends.
 
@@ -522,7 +522,9 @@ authorisation is enforced by implementing the
 <code>rabbit_authz_backend</code> behavior.
 
 
-## <a id="revoke" class="anchor" href="#revoke">Revoking User Access</a>
+## <a id="revoke" class="anchor" href="#revoke">Revoking User Access and Credential Rotation</a>
+
+### Revoking User Access
 
 To revoke user access, the recommended procedure is [deleting the user](#user-management).
 All open connections that belong to a deleted user will be closed.
@@ -533,24 +535,52 @@ use an authorization operation cache, so client operations
 will be refused eventually. The period of time depends on the
 [authorization backend](#backends) used.
 
+### Credential Rotation
 
-## <a id="backends" class="anchor" href="#backends">Alternative Authentication and Authorisation Backends</a>
+A credential rotation for credentials of users stored in the internal data store usually involves the following steps:
+
+ * [changing user password](rabbitmqctl.8.html#change_password) using CLI tools
+    or update it using the `PUT /api/users/{user}` [HTTP API](/management.html) endpoint
+ * Using `rabbitmqctl close_all_user_connections` or `rabbitmqctl close_all_connections` to close all existing connections
+ * Making sure that applications can discover the new credentials and reconnect, for example, by restarting them
+
+In case of a suspected credential leak, a more thorough credential rotation procedure can be employed:
+
+ * Assessing the permissions of the user and [obtaining a complete cluster definitions file](/definitions.html)
+ * [Delete the user](#user-management), thus revoking its access and closing all existing connections that used those credentials
+ * Re-adding the user with a new generated password
+ * Re-granting the user access to all the virtual hosts it had access to earlier
+ * Making sure that applications can discover the new credentials and reconnect, for example, by restarting them
+
+With external [authN backends](#backends) such as [LDAP](/ldap.html), user accounts are managed externally to RabbitMQ,
+therefore the credential rotation routine will also be external to RabbitMQ.
+
+
+## <a id="backends" class="anchor" href="#backends">Authentication and Authorisation Backends</a>
 
 Authentication and authorisation are pluggable. Plugins can provide implementations
-of
+of:
 
- * authentication ("authn") backends
- * authorisation ("authz") backends
+ * authentication ("authn") backends: they determine client identity and decide whether the client should be allowed to connect
+ * authorisation ("authz") backends: they determine whether an identified (authenticated) client is authorized to perform a certain operation
 
-It is possible for a plugin to provide both.
-For example the internal, [LDAP](ldap.html)
-and [HTTP](https://github.com/rabbitmq/rabbitmq-auth-backend-http)
-backends do so.
+It is possible and common for a plugin to provide both backends. RabbitMQ ships with
+the following [built-in plugins](./plugins.html) which provide both authentication and authorisation backends:
 
-Some plugins, for example, the <a href="https://github.com/gotthardp/rabbitmq-auth-backend-ip-range">Source IP range one</a>,
-only provide an authorisation backend. Authentication is supposed to be handled by the internal database, LDAP, etc.
+* [LDAP](ldap.html)
+* [HTTP](https://github.com/rabbitmq/rabbitmq-server/tree/v3.12.x/deps/rabbitmq_auth_backend_http)
 
-A special [cache backend](https://github.com/rabbitmq/rabbitmq-server/tree/v3.9.x/deps/rabbitmq_auth_backend_cache)
+The following built-in plugins provide authorisation backend implementations:
+
+* [OAuth2](oauth2.html)
+* [AMQP 0.9.1](https://github.com/rabbitmq/rabbitmq-server/tree/v3.12.x/deps/rabbitmq-auth-backend-amqp)
+
+Some plugins such as [Source IP range one](https://github.com/gotthardp/rabbitmq-auth-backend-ip-range)
+also only provide an authorisation backend.
+
+Authentication is supposed to be handled by the internal database, LDAP, etc.
+
+A special [cache backend](https://github.com/rabbitmq/rabbitmq-server/tree/v3.12.x/deps/rabbitmq_auth_backend_cache)
 can be used in [combination](#combined-backends) with other backends to significantly
 reduce the load they generate on external services, such as LDAP or HTTP servers.
 
@@ -584,7 +614,7 @@ The following aliases are available:
 
  * <code>internal</code> for <code>rabbit_auth_backend_internal</code>
  * <code>ldap</code> for <code>rabbit_auth_backend_ldap</code> (from the [LDAP plugin](./ldap.html))
- * <code>http</code> for <code>rabbit_auth_backend_http</code> (from the [HTTP auth backend plugin](https://github.com/rabbitmq/rabbitmq-auth-backend-http))
+ * <code>http</code> for <code>rabbit_auth_backend_http</code> (from the [HTTP auth backend plugin](https://github.com/rabbitmq/rabbitmq-server/tree/main/deps/rabbitmq_auth_backend_http))
  * <code>amqp</code> for <code>rabbit_auth_backend_amqp</code> (from the [AMQP 0-9-1 auth backend plugin](https://github.com/rabbitmq/rabbitmq-auth-backend-amqp))
  * <code>dummy</code> for <code>rabbit_auth_backend_dummy</code>
 
@@ -614,7 +644,7 @@ auth_backends.1 = ldap
 auth_backends.2 = internal
 </pre>
 
-Same as above but will fall back to the [HTTP backend](https://github.com/rabbitmq/rabbitmq-auth-backend-http)
+Same as above but will fall back to the [HTTP backend](https://github.com/rabbitmq/rabbitmq-server/tree/v3.12.x/deps/rabbitmq_auth_backend_http)
 instead:
 
 <pre class="lang-ini">

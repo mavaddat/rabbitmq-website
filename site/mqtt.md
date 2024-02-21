@@ -1,5 +1,5 @@
 <!--
-Copyright (c) 2007-2023 VMware, Inc. or its affiliates.
+Copyright (c) 2005-2024 Broadcom. All Rights Reserved. The term "Broadcom" refers to Broadcom Inc. and/or its subsidiaries.
 
 All rights reserved. This program and the accompanying materials
 are made available under the terms of the under the Apache License,
@@ -86,13 +86,15 @@ rabbitmq-plugins enable rabbitmq_mqtt
 Now that the plugin is enabled, MQTT clients will be able to connect provided that
 they have a set of credentials for an existing user with the appropriate permissions.
 
-### <a id="authentication" class="anchor" href="#authentication">Users and Authentication</a>
+
+## <a id="authentication" class="anchor" href="#authentication">Users and Authentication</a>
 
 For an MQTT connection to succeed, it must successfully authenticate and the user must
 have the [appropriate permissions](./access-control.html) to the virtual host used by the
 plugin (see below).
 
-MQTT clients can (and usually do) specify a set of credentials when they connect.
+MQTT clients can (and usually do) specify a set of credentials when they connect. The credentials
+can be a username and password pair, or a x.509 certificate (see below).
 
 The plugin supports anonymous authentication but its use is highly discouraged and it is a subject
 to certain limitations (listed below) enforced for a reasonable level of security
@@ -112,6 +114,17 @@ rabbitmqctl set_user_tags mqtt-test management
 </pre>
 
 Note that colons may not appear in usernames.
+
+## <a id="certificate-authentication" class="certificate-authentication" href="#certificate-authentication">x.509 (TLS) Certificate-based Authentication</a>
+
+MQTT clients can also authenticate using an x.509 (TLS) certificate. This feature is provided
+by a [separate plugin](https://github.com/rabbitmq/rabbitmq-server/tree/v3.12.x/deps/rabbitmq_auth_mechanism_ssl).
+
+The x.509 authentication mechanism extracts client username from either the Subject Alternative Name (SAN)
+or the Common Name (CN) certificate field.
+
+To avoid having to create an internal database user for every client certificate,
+authentication can be performed by a small [HTTP-based service](https://github.com/rabbitmq/rabbitmq-server/tree/v3.12.x/deps/rabbitmq_auth_backend_http).
 
 
 ## <a id="implementation" class="anchor" href="#implementation">How it Works</a>
@@ -135,7 +148,7 @@ MQTT topics that have dots in them won't work as expected and are to
 be avoided, the same goes for AMQP 0-9-1 routing keys that contains
 slashes.
 
-## <a id="local-vs-remote" class="anchor" href="#local-vs-remote">Local vs. Remote Client Connections</a>
+### <a id="local-vs-remote" class="anchor" href="#local-vs-remote">Local vs. Remote Client Connections</a>
 
 When an MQTT client provides no login credentials, the plugin uses the
 `guest` account by default which will not allow non-`localhost`
@@ -219,9 +232,14 @@ error and **fail to subscribe**.
 
 Below is a `rabbitmq.conf` example that opts in to use quorum queues for durable subscriptions:
 
-<pre class="">
-# must ONLY be enabled for new clusters before any clients declare durable
-# subscriptions
+<pre class="lang-ini">
+# Must ONLY be enabled for new clusters before any clients declare durable
+# subscriptions.
+#
+# Quorum queues should NOT be used in environments with high connection and queue
+# churn, see https://rabbitmq.com/networking.html#dealing-with-high-connection-churn.
+# Consumers that churn through queues (use very short-lived queues) will not get
+# any quorum queue benefits anyway.
 mqtt.durable_queue_type = quorum
 </pre>
 
@@ -236,7 +254,7 @@ about the durability of their state.
 
 ## <a id="consensus" class="anchor" href="#consensus">Consensus Features</a>
 
-As of RabbitMQ 3.8, this plugin requires a quorum (majority) of nodes to be online.
+This plugin requires a quorum (majority) of nodes to be online.
 This is because client ID tracking now uses a consensus protocol which requires
 a quorum of nodes to be online in order to make progress.
 
@@ -585,6 +603,10 @@ When the Sparkplug support is enabled, the MQTT plugin will not translate the
 
 
 ## <a id="limitations" class="anchor" href="#limitations">Limitations</a>
+
+### QoS 2 is Not Supported
+
+QoS 2 subscriptions will be treated as if they were QoS 1 subscriptions.
 
 ### Presence of a Quorum of Nodes
 

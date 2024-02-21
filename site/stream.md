@@ -1,5 +1,5 @@
 <!--
-Copyright (c) 2007-2023 VMware, Inc. or its affiliates.
+Copyright (c) 2005-2024 Broadcom. All Rights Reserved. The term "Broadcom" refers to Broadcom Inc. and/or its subsidiaries.
 
 All rights reserved. This program and the accompanying materials
 are made available under the terms of the under the Apache License,
@@ -25,16 +25,32 @@ an append-only log with non-destructive consumer semantics.
 This feature is available in all [currently maintained release series](./versions.html).
 
 Streams can be used as a regular AMQP 0.9.1 queue or through a
-[dedicated binary protocol](https://github.com/rabbitmq/rabbitmq-server/blob/v3.11.x/deps/rabbitmq_stream/docs/PROTOCOL.adoc)
+[dedicated binary protocol](https://github.com/rabbitmq/rabbitmq-server/blob/v3.12.x/deps/rabbitmq_stream/docs/PROTOCOL.adoc)
 plugin and associated client(s).
 Please see the [stream core and stream plugin comparison page](./stream-core-plugin-comparison.html) for the feature matrix.
 
 This page covers the Stream plugin, which allows to interact with streams using this
-[new binary protocol](https://github.com/rabbitmq/rabbitmq-server/blob/v3.11.x/deps/rabbitmq_stream/docs/PROTOCOL.adoc).
+[new binary protocol](https://github.com/rabbitmq/rabbitmq-server/blob/v3.12.x/deps/rabbitmq_stream/docs/PROTOCOL.adoc).
 For an overview of the concepts and the ways to operate streams, please see the
 [guide on RabbitMQ streams](streams.html).
 
-Client libraries for the stream protocol are available on several platforms: [Java](https://github.com/rabbitmq/rabbitmq-stream-java-client), [Go](https://github.com/rabbitmq/rabbitmq-stream-go-client), [.NET](https://github.com/rabbitmq/rabbitmq-stream-dotnet-client), Python ([rbly](https://gitlab.com/wrobell/rbfly), [rstream](https://pypi.org/project/rstream/)), [Erlang](https://gitlab.com/evnu/lake), [Elixir](https://github.com/VictorGaiva/rabbitmq-stream), [Rust](https://github.com/rabbitmq/rabbitmq-stream-rust-client), [NodeJS](https://github.com/coders51/rabbitmq-stream-js-client).
+Client libraries for the stream protocol are available on several platforms.
+
+*Note:* items with a check mark (&#x2713;) are officially supported by the RabbitMQ Team at VMware.
+
+
+* [&#x2713; RabbitMQ Java Stream Client](https://github.com/rabbitmq/rabbitmq-stream-java-client)
+* [&#x2713; RabbitMQ Golang Stream Client](https://github.com/rabbitmq/rabbitmq-stream-go-client)
+* [&#x2713; RabbitMQ .NET Stream Client](https://github.com/rabbitmq/rabbitmq-stream-dotnet-client)
+* [&#x2713; RabbitMQ Rust Stream Client](https://github.com/rabbitmq/rabbitmq-stream-rust-client)
+* [&#x2713; RabbitMQ Python Stream Client (rstream)](https://pypi.org/project/rstream/)
+* [RabbitMQ Python Stream Client (rbfly)](https://gitlab.com/wrobell/rbfly)
+* [RabbitMQ NodeJS Stream Client](https://github.com/coders51/rabbitmq-stream-js-client)
+* [RabbitMQ Erlang Stream Client (lake)](https://gitlab.com/evnu/lake)
+* [RabbitMQ Elixir Stream Client ](https://github.com/VictorGaiva/rabbitmq-stream)
+* [RabbitMQ C Stream Client ](https://github.com/GianfrancoGGL/rabbitmq-stream-c-client)
+
+Use [Stream PerfTest](https://github.com/rabbitmq/rabbitmq-stream-perf-test) to simulate workloads and measure the performance of your RabbitMQ stream system.
 
 ## <a id="enabling-plugin" class="anchor" href="#enabling-plugin">Enabling the Plugin</a>
 
@@ -94,15 +110,34 @@ stream.tcp_listen_options.exit_on_close = true
 stream.tcp_listen_options.send_timeout  = 120
 </pre>
 
-### <a id="protocol" class="anchor" href="#protocol">Protocol</a>
+### <a id="heartbeats" class="anchor" href="#heartbeats">Heartbeat Timeout</a>
 
-It is possible to set the maximum size of frames (default is 1 MiB) and the heartbeat (default is
-60 seconds), if needed:
+The `heartbeat timeout` value defines after what period of time
+the peer TCP connection should be considered unreachable (down) by RabbitMQ
+and client libraries.
+
+A [similar mechanism](./heartbeats.html) is used by the messaging protocols that RabbitMQ supports.
+
+The default value for stream protocol connections is 60 seconds.
 
 <pre class="lang-ini">
-stream.frame_max = 2097152 # in bytes
-stream.heartbeat = 120 # in seconds
+# use a lower heartbeat timeout value
+stream.heartbeat = 20
 </pre>
+
+Setting heartbeat timeout value too low can lead to false
+positives (peer being considered unavailable while it is not
+really the case) due to transient network congestion,
+short-lived server flow control, and so on.
+
+This should be taken into consideration when picking a timeout
+value.
+
+Several years worth of feedback from the users and client
+library maintainers suggest that values lower than 5 seconds
+are fairly likely to cause false positives, and values of 1
+second or lower are very likely to do so. Values within the 5
+to 20 seconds range are optimal for most environments.
 
 ### <a id="flow-control" class="anchor" href="#flow-control">Flow Control</a>
 
@@ -125,18 +160,18 @@ This setting applies only to **publishers**, it does not apply to consumers.
 
 This section covers the stream protocol credit flow mechanism that allows consumers to control how the broker dispatches messages.
 
-A consumer provides an initial number of credits when it creates its [subscription](https://github.com/rabbitmq/rabbitmq-server/blob/v3.11.x/deps/rabbitmq_stream/docs/PROTOCOL.adoc#subscribe).
+A consumer provides an initial number of credits when it creates its [subscription](https://github.com/rabbitmq/rabbitmq-server/blob/v3.12.x/deps/rabbitmq_stream/docs/PROTOCOL.adoc#subscribe).
 A credit represents a *chunk* of messages that the broker is allowed to send to the consumer.
 
 A *chunk* is a batch of messages.
-This is the storage and transportation unit used in RabbitMQ Stream, that is messages are stored contiguously in a chunk and they are [delivered](https://github.com/rabbitmq/rabbitmq-server/blob/v3.11.x/deps/rabbitmq_stream/docs/PROTOCOL.adoc#deliver) as part of a chunk.
+This is the storage and transportation unit used in RabbitMQ Stream, that is messages are stored contiguously in a chunk and they are [delivered](https://github.com/rabbitmq/rabbitmq-server/blob/v3.12.x/deps/rabbitmq_stream/docs/PROTOCOL.adoc#deliver) as part of a chunk.
 A chunk can be made of one to several thousands of messages, depending on the ingress.
 
 So if a consumer creates a subscription with 5 initial credits, the broker will send 5 chunks of messages.
 The broker substracts a credit every time it delivers a chunk.
 When there is no credit left for a subscription, the broker stops sending messages.
 So in our example the broker will stop sending messages for this subscription after it delivers 5 chunks.
-This is not what we usually want, so the consumer can provide [credits](https://github.com/rabbitmq/rabbitmq-server/blob/v3.11.x/deps/rabbitmq_stream/docs/PROTOCOL.adoc#credit) to its subscription to get more messages.
+This is not what we usually want, so the consumer can provide [credits](https://github.com/rabbitmq/rabbitmq-server/blob/v3.12.x/deps/rabbitmq_stream/docs/PROTOCOL.adoc#credit) to its subscription to get more messages.
 
 
 This is up to the consumer (i.e. client library and/or application) to provide credits, depending on how fast it processes messages.
@@ -165,6 +200,18 @@ stream.advertised_port = 12345
 </pre>
 
 The [Connecting to Streams](https://blog.rabbitmq.com/posts/2021/07/connecting-to-streams/) blog post covers why the `advertised_host` and `advertised_port` settings are necessary in some deployments.
+
+
+### <a id="frame-size" class="anchor" href="#frame-size">Maximum Frame Size</a>
+
+RabbitMQ Stream protocol uses a maximum frame size limit. The default is 1 MiB and the value
+can be increased if necessary:
+
+<pre class="lang-ini">
+# in bytes
+stream.frame_max = 2097152
+</pre>
+
 
 ## <a id="tls" class="anchor" href="#tls">TLS Support</a>
 

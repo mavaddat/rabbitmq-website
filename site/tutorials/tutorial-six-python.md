@@ -1,5 +1,5 @@
 <!--
-Copyright (c) 2007-2023 VMware, Inc. or its affiliates.
+Copyright (c) 2005-2024 Broadcom. All Rights Reserved. The term "Broadcom" refers to Broadcom Inc. and/or its subsidiaries.
 
 All rights reserved. This program and the accompanying materials
 are made available under the terms of the under the Apache License,
@@ -50,7 +50,7 @@ which sends an RPC request and blocks until the answer is received:
 <pre class="lang-python">
 fibonacci_rpc = FibonacciRpcClient()
 result = fibonacci_rpc.call(4)
-print("fib(4) is %r" % result)
+print(f"fib(4) is {result}")
 </pre>
 
 > #### A note on RPC
@@ -238,7 +238,7 @@ def fib(n):
 def on_request(ch, method, props, body):
     n = int(body)
 
-    print(" [.] fib(%s)" % n)
+    print(f" [.] fib({n})")
     response = fib(n)
 
     ch.basic_publish(exchange='',
@@ -312,7 +312,8 @@ class FibonacciRpcClient(object):
                 correlation_id=self.corr_id,
             ),
             body=str(n))
-        self.connection.process_data_events(time_limit=None)
+        while self.response is None:
+            self.connection.process_data_events(time_limit=None)
         return int(self.response)
 
 
@@ -320,7 +321,7 @@ fibonacci_rpc = FibonacciRpcClient()
 
 print(" [x] Requesting fib(30)")
 response = fibonacci_rpc.call(30)
-print(" [.] Got %r" % response)
+print(f" [.] Got {response}")
 </pre>
 
 The client code is slightly more involved:

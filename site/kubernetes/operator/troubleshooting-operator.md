@@ -1,10 +1,8 @@
-# Troubleshooting Cluster Operator
+# Troubleshooting the Cluster Operator
 
-This guide describes how to troubleshoot common problems with RabbitMQ Cluster Kubernetes Operator.
+Use this information to troubleshoot common problems with the RabbitMQ Cluster Kubernetes Operator.
 
-This guide may be helpful for DIY RabbitMQ on Kubernetes deployments but such environments
-are not its primary focus.
-
+Note, the following information may be helpful for "do it yourself" (DIY) RabbitMQ on Kubernetes deployments but such environments are not its primary focus.
 
 ## <a id="errors" class="anchor" href="#errors">Common Scenarios and Errors</a>
 
@@ -15,6 +13,7 @@ Certain errors have dedicated sections:
 + [Pods restart on startup](#pods-restart-on-startup)
 + [Pods are stuck in the terminating state](#pods-stuck-in-terminating-state)
 + [Cluster Operator fails on startup](#operator-failure-on-startup)
++ [RabbitMQ cluster status conditions](#status-conditions)
 
 ### <a id="cluster-fails-to-deploy" class="anchor" href="#cluster-fails-to-deploy">RabbitMQ Cluster Fails to Deploy</a>
 
@@ -74,6 +73,31 @@ The Pod restarts and becomes `Ready` eventually.
 Since RabbitMQ nodes [resolve their own and peer hostnames during boot](../../clustering.html#hostname-resolution-requirement),
 CoreDNS [caching timeout may need to be decreased](https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/#stable-network-id) from default 30 seconds
 to a value in the 5-10 seconds range.
+
+### <a id="pods-crash-loop" class="anchor" href="#pods-crash-loop">Pods in CrashLoopBackOff State</a>
+Since Kubernetes restarts failing pods, if a RabbitMQ node can't start, it will likely enter
+the CrashLoopBackOff state - it attempts to start, fails and is restarted again. In such situations
+it might be hard to debug or fix the problem, if that requires accessing the pod or its data.
+
+In some cases, you know you can fix the problem by starting a fresh node, which will synchronise everything from
+the other nodes in the cluster. Here's how you can do that:
+
+<p class="box-warning">
+The procedure below completely deletes a pod (RabbitMQ node) and its disk.
+This means the data from that node will be lost. Make sure you understand the consequences.
+</p>
+
+1. `kubectl rabbitmq pause-reconciliation RMQ_NAME` (or add a label if you don't have the kubectl-rabbitmq plugin/CLI) - this means the Operator won't "fix" (overwrite) manual changes to the underlying objects
+1. `kubectl delete statefulset --cascade=orphan RMQ_NAME-server` - delete the statefulset so that it doesn't "fix" the pods (recreate the missing pod after we delete it)
+1. `kubectl delete pod RMQ_SERVER-server-2` (you can delete any pod you want here)
+1. `kubectl delete pvc RMQ_NAME-server-2`
+1. `kubectl delete pv PV_NAME` if needed (this will completely delete the previous disk/data)
+1. `kubectl rabbitmq resume-reconciliation RMQ_NAME` (or delete the label) - the Operator fixes the deployment by recreating the StatefulSet and the StatefulSet recreates the missing pod and PVC
+
+You can adapt this procedure to other situations as well - for example rather than deleting the disk,
+you can start a pod and attach the volume to investigate the contents.
+
+The only RabbitMQ specific parts of this process are the first and last steps. [Leran more about pausing RabbitmqCluster reconciliation](using-operator.html#pause). The other commands are common Kubernetes administration tasks.
 
 ### <a id="pods-stuck-in-terminating-state" class="anchor" href="#pods-stuck-in-terminating-state">Pods Are Stuck in the Terminating State</a>
 
@@ -141,3 +165,49 @@ Potential solution to resolve this issue:
    * `Get https://ADDRESS:443/api: connect: connection refused`
  * Check whether your Kubernetes cluster is healthy, specifically the `kube-apiserver` component
  * Check whether any security network policies could prevent the Operator from reaching the Kubernetes API server
+
+### <a id="status-conditions" class="anchor" href="#status-conditions"> RabbitMQ cluster status conditions </a>
+
+A RabbitMQ instance has status.conditions that describe the current state of the RabbitMQ cluster.
+To get the status, run:
+<pre class="lang-bash">
+kubectl describe rmq RMQ_NAME
+</pre>
+
+Example status conditions may look like:
+<pre class="lang-yaml">
+Name:         test-rabbit
+Namespace:    rabbitmq-system
+API Version:  rabbitmq.com/v1beta1
+Kind:         RabbitmqCluster
+...
+Status:
+  Binding:
+    Name:  sample-default-user
+  Conditions:
+    Last Transition Time:  2023-07-07T11:57:10Z
+    Reason:                AllPodsAreReady
+    Status:                True
+    Type:                  AllReplicasReady # true when all RabbitMQ pods are 'ready'
+    Last Transition Time:  2023-07-07T11:57:10Z
+    Reason:                AtLeastOneEndpointAvailable
+    Status:                True
+    Type:                  ClusterAvailable # true when at least one RabbitMQ pod is 'ready'
+    Last Transition Time:  2023-07-07T11:55:58Z
+    Reason:                NoWarnings
+    Status:                True
+    Type:                  NoWarnings
+    Last Transition Time:  2023-07-07T11:57:11Z
+    Message:               Finish reconciling
+    Reason:                Success
+    Status:                True
+    Type:                  ReconcileSuccess
+...
+</pre>
+If the status condition `ReconcileSuccess` is false, that means the last reconcile has errored and RabbitMQ cluster configuration could be out of date. Checking out Cluster Operator logs is useful to understand why reconcile failed.
+
+To get Operator logs:
+
+<pre class="lang-bash">
+kubectl -n rabbitmq-system logs -l app.kubernetes.io/name=rabbitmq-cluster-operator
+</pre>

@@ -1,5 +1,5 @@
 <!--
-Copyright (c) 2007-2023 VMware, Inc. or its affiliates.
+Copyright (c) 2005-2024 Broadcom. All Rights Reserved. The term "Broadcom" refers to Broadcom Inc. and/or its subsidiaries.
 
 All rights reserved. This program and the accompanying materials
 are made available under the terms of the under the Apache License,
@@ -126,6 +126,16 @@ on a closed channel will result in an exception that says that the channel has a
 closed.
 
 When a channel's connection is closed, so is the channel.
+
+If a channel is closed immediately after a consumer [acknowledged a number of deliveries](/confirms.html) on it,
+the acknowledgements may or may not reach their target queue before the channel is terminated.
+In this case the messages with a pending acknowledgement on the channel will be automatically requeued
+following the channel closure.
+
+This scenario usually applies to workloads with short lived channels. Using long lived channels and
+designing consumers in a way that they can handle redeliveries potential surprises may be
+associated with this edge case behavior. Note that redelivered messages will be [explicitly marked as such](/consumers.html#message-properties).
+
 
 ### <a id="error-handling" class="anchor" href="#error-handling">Channels and Error Handling</a>
 

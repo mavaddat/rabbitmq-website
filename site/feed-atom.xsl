@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Copyright (c) 2007-2023 VMware, Inc. or its affiliates.
+Copyright (c) 2005-2024 Broadcom. All Rights Reserved. The term "Broadcom" refers to Broadcom Inc. and/or its subsidiaries.
 
 All rights reserved. This program and the accompanying materials
 are made available under the terms of the under the Apache License,
@@ -69,7 +69,7 @@ limitations under the License.
       <author>
           <name>RabbitMQ</name>
           <uri>https://www.rabbitmq.com/</uri>
-          <email>info@rabbitmq.com</email>
+          <email>rabbitmq-core@groups.vmware.com</email>
       </author>
       <content type="xhtml">
         <div xmlns="http://www.w3.org/1999/xhtml">

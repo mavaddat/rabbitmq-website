@@ -1,5 +1,5 @@
 <!--
-Copyright (c) 2007-2023 VMware, Inc. or its affiliates.
+Copyright (c) 2005-2024 Broadcom. All Rights Reserved. The term "Broadcom" refers to Broadcom Inc. and/or its subsidiaries.
 
 All rights reserved. This program and the accompanying materials
 are made available under the terms of the under the Apache License,
@@ -41,6 +41,361 @@ released separately.
   </tr>
 
   <!-- releases -->
+
+  <tr>
+    <td class="centre">3.12.13</td>
+    <td class="centre">February 16 2024</td>
+    <td>
+      <ul>
+        <li>Bug fixes</li>
+      </ul>
+    </td>
+    <td class="centre">
+      <a href="https://github.com/rabbitmq/rabbitmq-server/releases/tag/v3.12.13">Release notes</a>
+    </td>
+  </tr>
+
+  <tr>
+    <td class="centre">3.12.12</td>
+    <td class="centre">January 9 2024</td>
+    <td>
+      <ul>
+        <li>Bug fixes</li>
+      </ul>
+    </td>
+    <td class="centre">
+      <a href="https://github.com/rabbitmq/rabbitmq-server/releases/tag/v3.12.12">Release notes</a>
+    </td>
+  </tr>
+
+  <tr>
+    <td class="centre">3.12.11</td>
+    <td class="centre">December 22 2023</td>
+    <td>
+      <ul>
+        <li>Bug fixes</li>
+      </ul>
+    </td>
+    <td class="centre">
+      <a href="https://github.com/rabbitmq/rabbitmq-server/releases/tag/v3.12.11">Release notes</a>
+    </td>
+  </tr>
+
+  <tr>
+    <td class="centre">3.11.28</td>
+    <td class="centre">December 22 2023</td>
+    <td>
+      <ul>
+        <li>Bug fixes</li>
+      </ul>
+    </td>
+    <td class="centre">
+      <a href="https://github.com/rabbitmq/rabbitmq-server/releases/tag/v3.11.28">Release notes</a>
+    </td>
+  </tr>
+
+  <tr>
+    <td class="centre">3.11.27</td>
+    <td class="centre">December 15 2023</td>
+    <td>
+      <ul>
+        <li>Bug fixes</li>
+      </ul>
+    </td>
+    <td class="centre">
+      <a href="https://github.com/rabbitmq/rabbitmq-server/releases/tag/v3.11.27">Release notes</a>
+    </td>
+  </tr>
+
+  <tr>
+    <td class="centre">3.12.10</td>
+    <td class="centre">November 21 2023</td>
+    <td>
+      <ul>
+        <li>Bug fixes</li>
+      </ul>
+    </td>
+    <td class="centre">
+      <a href="https://github.com/rabbitmq/rabbitmq-server/releases/tag/v3.12.10">Release notes</a>
+    </td>
+  </tr>
+
+  <tr>
+    <td class="centre">3.11.26</td>
+    <td class="centre">November 20 2023</td>
+    <td>
+      <ul>
+        <li>Bug fixes</li>
+      </ul>
+    </td>
+    <td class="centre">
+      <a href="https://github.com/rabbitmq/rabbitmq-server/releases/tag/v3.11.26">Release notes</a>
+    </td>
+  </tr>
+
+  <tr>
+    <td class="centre">3.12.9</td>
+    <td class="centre">November 17 2023</td>
+    <td>
+      <ul>
+        <li>Bug fixes</li>
+      </ul>
+    </td>
+    <td class="centre">
+      <a href="https://github.com/rabbitmq/rabbitmq-server/releases/tag/v3.12.9">Release notes</a>
+    </td>
+  </tr>
+
+  <tr>
+    <td class="centre">3.11.25</td>
+    <td class="centre">November 1 2023</td>
+    <td>
+      <ul>
+        <li>Bug fixes</li>
+      </ul>
+    </td>
+    <td class="centre">
+      <a href="https://github.com/rabbitmq/rabbitmq-server/releases/tag/v3.11.25">Release notes</a>
+    </td>
+  </tr>
+
+  <tr>
+    <td class="centre">3.12.8</td>
+    <td class="centre">November 1 2023</td>
+    <td>
+      <ul>
+        <li>Bug fixes</li>
+      </ul>
+    </td>
+    <td class="centre">
+      <a href="https://github.com/rabbitmq/rabbitmq-server/releases/tag/v3.12.8">Release notes</a>
+    </td>
+  </tr>
+
+  <tr>
+    <td class="centre">3.11.24</td>
+    <td class="centre">November 1 2023</td>
+    <td>
+      <ul>
+        <li>Bug fixes</li>
+      </ul>
+    </td>
+    <td class="centre">
+      <a href="https://github.com/rabbitmq/rabbitmq-server/releases/tag/v3.11.25">Release notes</a>
+    </td>
+  </tr>
+
+  <tr>
+    <td class="centre">3.12.7</td>
+    <td class="centre">October 18 2023</td>
+    <td>
+      <ul>
+        <li>A patch for <a href="https://github.com/rabbitmq/rabbitmq-server/security/advisories/GHSA-w6cq-9cf4-gqpg">CVE-2023-46118</a></li>
+        <li>Bug fixes</li>
+      </ul>
+    </td>
+    <td class="centre">
+      <a href="https://github.com/rabbitmq/rabbitmq-server/releases/tag/v3.12.7">Release notes</a>
+    </td>
+  </tr>
+
+  <tr>
+    <td class="centre">3.11.24</td>
+    <td class="centre">October 18 2023</td>
+    <td>
+      <ul>
+        <li>A patch for <a href="https://github.com/rabbitmq/rabbitmq-server/security/advisories/GHSA-w6cq-9cf4-gqpg">CVE-2023-46118</a></li>
+        <li>Bug fixes</li>
+      </ul>
+    </td>
+    <td class="centre">
+      <a href="https://github.com/rabbitmq/rabbitmq-server/releases/tag/v3.11.24">Release notes</a>
+    </td>
+  </tr>
+
+  <tr>
+    <td class="centre">3.12.6</td>
+    <td class="centre">September 22 2023</td>
+    <td>
+      <ul>
+        <li>Important dependency update</li>
+      </ul>
+    </td>
+    <td class="centre">
+      <a href="https://github.com/rabbitmq/rabbitmq-server/releases/tag/v3.12.6">Release notes</a>
+    </td>
+  </tr>
+
+  <tr>
+    <td class="centre">3.12.5</td>
+    <td class="centre">September 20 2023</td>
+    <td>
+      <ul>
+        <li>Bug fixes</li>
+      </ul>
+    </td>
+    <td class="centre">
+      <a href="https://github.com/rabbitmq/rabbitmq-server/releases/tag/v3.12.5">Release notes</a>
+    </td>
+  </tr>
+
+  <tr>
+    <td class="centre">3.11.23</td>
+    <td class="centre">September 12 2023</td>
+    <td>
+      <ul>
+        <li>Bug fixes</li>
+      </ul>
+    </td>
+    <td class="centre">
+      <a href="https://github.com/rabbitmq/rabbitmq-server/releases/tag/v3.11.23">Release notes</a>
+    </td>
+  </tr>
+
+  <tr>
+    <td class="centre">3.12.4</td>
+    <td class="centre">August 24 2023</td>
+    <td>
+      <ul>
+        <li>Bug fixes</li>
+      </ul>
+    </td>
+    <td class="centre">
+      <a href="https://github.com/rabbitmq/rabbitmq-server/releases/tag/v3.12.4">Release notes</a>
+    </td>
+  </tr>
+
+  <tr>
+    <td class="centre">3.11.22</td>
+    <td class="centre">August 24 2023</td>
+    <td>
+      <ul>
+        <li>Bug fixes</li>
+      </ul>
+    </td>
+    <td class="centre">
+      <a href="https://github.com/rabbitmq/rabbitmq-server/releases/tag/v3.11.22">Release notes</a>
+    </td>
+  </tr>
+
+  <tr>
+    <td class="centre">3.12.3</td>
+    <td class="centre">August 18 2023</td>
+    <td>
+      <ul>
+        <li>Bug fixes</li>
+      </ul>
+    </td>
+    <td class="centre">
+      <a href="https://github.com/rabbitmq/rabbitmq-server/releases/tag/v3.12.3">Release notes</a>
+    </td>
+  </tr>
+
+  <tr>
+    <td class="centre">3.11.21</td>
+    <td class="centre">August 18 2023</td>
+    <td>
+      <ul>
+        <li>Bug fixes</li>
+      </ul>
+    </td>
+    <td class="centre">
+      <a href="https://github.com/rabbitmq/rabbitmq-server/releases/tag/v3.11.21">Release notes</a>
+    </td>
+  </tr>
+
+  <tr>
+    <td class="centre"></td>
+    <td class="centre">July 31 2023</td>
+    <td>
+      <ul>
+        <li>RabbitMQ 3.10.x series is now only <a href="./versions.html">covered by extended commercial support</a></li>
+      </ul>
+    </td>
+    <td class="centre">
+    </td>
+  </tr>
+
+  <tr>
+    <td class="centre"></td>
+    <td class="centre">July 31 2023</td>
+    <td>
+      <ul>
+        <li>RabbitMQ 3.9.x series has <a href="./versions.html">reached end of life</a></li>
+      </ul>
+    </td>
+    <td class="centre">
+    </td>
+  </tr>
+
+  <tr>
+    <td class="centre">3.12.2</td>
+    <td class="centre">July 18 2023</td>
+    <td>
+      <ul>
+        <li>Bug fixes</li>
+        <li>Usability improvements</li>
+      </ul>
+    </td>
+    <td class="centre">
+      <a href="https://github.com/rabbitmq/rabbitmq-server/releases/tag/v3.12.2">Release notes</a>
+    </td>
+  </tr>
+
+  <tr>
+    <td class="centre">3.11.20</td>
+    <td class="centre">July 18 2023</td>
+    <td>
+      <ul>
+        <li>Bug fixes</li>
+        <li>Usability improvements</li>
+      </ul>
+    </td>
+    <td class="centre">
+      <a href="https://github.com/rabbitmq/rabbitmq-server/releases/tag/v3.11.20">Release notes</a>
+    </td>
+  </tr>
+
+  <tr>
+    <td class="centre">3.10.25</td>
+    <td class="centre">July 18 2023</td>
+    <td>
+      <ul>
+        <li>Bug fixes</li>
+      </ul>
+    </td>
+    <td class="centre">
+      <a href="https://github.com/rabbitmq/rabbitmq-server/releases/tag/v3.10.25">Release notes</a>
+    </td>
+  </tr>
+
+  <tr>
+    <td class="centre">3.12.1</td>
+    <td class="centre">June 26 2023</td>
+    <td>
+      <ul>
+        <li>Bug fixes</li>
+        <li>Usability improvements</li>
+      </ul>
+    </td>
+    <td class="centre">
+      <a href="https://github.com/rabbitmq/rabbitmq-server/releases/tag/v3.12.1">Release notes</a>
+    </td>
+  </tr>
+
+  <tr>
+    <td class="centre">3.11.19</td>
+    <td class="centre">June 26 2023</td>
+    <td>
+      <ul>
+        <li>Bug fixes</li>
+        <li>Usability improvements</li>
+      </ul>
+    </td>
+    <td class="centre">
+      <a href="https://github.com/rabbitmq/rabbitmq-server/releases/tag/v3.11.19">Release notes</a>
+    </td>
+  </tr>
 
   <tr>
     <td class="centre">3.11.18</td>
@@ -193,60 +548,6 @@ released separately.
   </tr>
 
   <tr>
-    <td class="centre">3.11.15</td>
-    <td class="centre">30 April 2023</td>
-    <td>
-      <ul>
-        <li>RPM package spec update</li>
-      </ul>
-    </td>
-    <td class="centre">
-      <a href="https://github.com/rabbitmq/rabbitmq-server/releases/tag/v3.11.15">Release notes</a>
-    </td>
-  </tr>
-
-  <tr>
-    <td class="centre">3.10.22</td>
-    <td class="centre">30 April 2023</td>
-    <td>
-      <ul>
-        <li>RPM package spec update</li>
-      </ul>
-    </td>
-    <td class="centre">
-      <a href="https://github.com/rabbitmq/rabbitmq-server/releases/tag/v3.10.22">Release notes</a>
-    </td>
-  </tr>
-
-  <tr>
-    <td class="centre">3.11.14</td>
-    <td class="centre">29 April 2023</td>
-    <td>
-      <ul>
-        <li>Bug fixes</li>
-        <li>Usability improvements</li>
-      </ul>
-    </td>
-    <td class="centre">
-      <a href="https://github.com/rabbitmq/rabbitmq-server/releases/tag/v3.11.14">Release notes</a>
-    </td>
-  </tr>
-
-  <tr>
-    <td class="centre">3.10.21</td>
-    <td class="centre">29 April 2023</td>
-    <td>
-      <ul>
-        <li>Bug fixes</li>
-        <li>Usability improvements</li>
-      </ul>
-    </td>
-    <td class="centre">
-      <a href="https://github.com/rabbitmq/rabbitmq-server/releases/tag/v3.10.21">Release notes</a>
-    </td>
-  </tr>
-
-  <tr>
     <td class="centre">3.11.13</td>
     <td class="centre">31 March 2023</td>
     <td>
@@ -312,6 +613,7 @@ released separately.
     </td>
     <td class="centre">
       <a href="https://github.com/rabbitmq/rabbitmq-server/releases/tag/v3.9.29">Release notes</a>
+      <li>This is the <a href="./versions.html">final 3.9.x release</a></li>
     </td>
   </tr>
 

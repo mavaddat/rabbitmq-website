@@ -1,5 +1,5 @@
 <!--
-Copyright (c) 2007-2023 VMware, Inc. or its affiliates.
+Copyright (c) 2005-2024 Broadcom. All Rights Reserved. The term "Broadcom" refers to Broadcom Inc. and/or its subsidiaries.
 
 All rights reserved. This program and the accompanying materials
 are made available under the terms of the under the Apache License,
@@ -105,18 +105,18 @@ To add an upstream, use the `rabbitmqctl set_parameter` command. It accepts thre
 * An upstream name that federation policies will refer to
 * An upstream definition JSON document with at least one mandatory key, `uri`
 
-The following example configures an upstream named "source" which can be contacted at <code>remote-host.local:5672</code>:
+The following example configures an upstream named "origin" which can be contacted at <code>remote-host.local:5672</code>:
 
 <pre class="lang-bash">
 # Adds a federation upstream named "origin"
-rabbitmqctl set_parameter federation-upstream origin '{"uri":"amqp://localhost:5672"}'
+rabbitmqctl set_parameter federation-upstream origin '{"uri":"amqp://remote-host.local:5672"}'
 </pre>
 
 On Windows, use `rabbitmqctl.bat` and suitable PowerShell quoting:
 
 <pre class="lang-powershell">
 # Adds a federation upstream named "origin"
-rabbitmqctl.bat set_parameter federation-upstream origin "{""uri"":""amqp://localhost:5672""}"
+rabbitmqctl.bat set_parameter federation-upstream origin "{""uri"":""amqp://remote-host.local:5672""}"
 </pre>
 
 More upstream definition parameters are covered in the [Federation Reference guide](./federation-reference.html).

@@ -1,5 +1,5 @@
 <!--
-Copyright (c) 2007-2023 VMware, Inc. or its affiliates.
+Copyright (c) 2005-2024 Broadcom. All Rights Reserved. The term "Broadcom" refers to Broadcom Inc. and/or its subsidiaries.
 
 All rights reserved. This program and the accompanying materials
 are made available under the terms of the under the Apache License,
@@ -259,8 +259,7 @@ and requires peers to present a certificate:
     {keyfile,    "/full/path/to/client_key.pem"},
     {password,   "password-if-keyfile-is-encrypted"},
     {secure_renegotiate, true},
-    {verify, verify_peer},
-    {fail_if_no_peer_cert, true}
+    {verify, verify_peer}
   ]}
 ].
 </pre>
@@ -331,8 +330,7 @@ to be set if necessary.
         {keyfile, "C:/Path/To/client_key.pem"},
         {password, "password-if-keyfile-is-encrypted"},
         {secure_renegotiate, true},
-        {verify, verify_peer},
-        {fail_if_no_peer_cert, true}
+        {verify, verify_peer}
     ]}
 ].
 </pre>

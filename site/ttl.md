@@ -1,5 +1,5 @@
 <!--
-Copyright (c) 2007-2023 VMware, Inc. or its affiliates.
+Copyright (c) 2005-2024 Broadcom. All Rights Reserved. The term "Broadcom" refers to Broadcom Inc. and/or its subsidiaries.
 
 All rights reserved. This program and the accompanying materials
 are made available under the terms of the under the Apache License,
@@ -15,20 +15,34 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 
-# Time-To-Live and Expiration
+# Time-to-Live and Expiration
 
-## <a id="overview" class="anchor" href="#overview">Overview</a>
+Key topics covered in this documentation guide are
 
-RabbitMQ allows you to set TTL (time to live) for both messages and queues. Expired
-messages and queues will be deleted: the specifics will be covered in more detail
-later in this guide.
+ * An overview of queue TTL and message TTL features supported by RabbitMQ
+ * Per-queue [message TTL defined at the queue level](#per-queue-message-ttl)
+ * Per-message [TTL defined by publishers](#per-message-ttl-in-publishers)
+ * [Message TTL and dead lettering](#message-ttl-dead-lettering)
+ * [Message TTL applied retroactively](#message-ttl-applied-retroactively)
+ * [Queue TTL](#queue-ttl) (expiration of queues)
 
-TTL behavior is controlled by [optional queue arguments](queues.html) and best done using a [policy](./parameters.html).
 
-Message TTL can be applied to a single queue, a group of
-queues or applied on the message-by-message basis.
+## <a id="overview" class="anchor" href="#overview">Time-To-Live Feature</a>
+
+With RabbitMQ, you can set a TTL (time-to-live) argument or policy for messages and queues. As the name suggests, TTL specifies the time period that the messages and queues "live for".
+
+Message TTL determines how long messages can be retained in a queue. If the retention period of a message in a queue exceeds the message TTL of the queue, the message expires and is discarded.
+
+"Discarded" means that the message will not be delivered to any of subscribed consumers and won't be accessible through `basic.get` method applied directly on queue. Message TTL can be applied to a single queue, a group of queues, or applied on the message-by-message basis.
+
+TTL can also be set on queues, not just queue contents. This feature can be used together with the auto-delete queue property. Setting TTL (expiration) on queues generally only makes sense for transient (non-durable) classic queues. Streams do not support expiration.
+
+Queues will expire after a period of time only when they are not used (a queue is used if it has online consumers).
+
+TTL behavior is controlled by [optional queue arguments](queues.html) and the best way to configure it is using a [policy](./parameters.html).
 
 TTL settings also can be enforced by [operator policies](./parameters.html#operator-policies).
+
 
 ## <a id="per-queue-message-ttl" class="anchor" href="#per-queue-message-ttl">Per-Queue Message TTL in Queues</a>
 
@@ -37,14 +51,15 @@ Message TTL can be set for a given queue by setting the
 or by specifying the same argument at the time of queue declaration.
 
 A message that has been in the queue for longer than the configured TTL is said to
-be *dead*. Note that a message routed to multiple queues
-can die at different times, or not at all, in each queue in
+be *expired*. Note that a message routed to multiple queues
+can expire at different times, or not at all, in each queue in
 which it resides. The death of a message in one queue has no
 impact on the life of the same message in other queues.
 
-The server guarantees that dead messages will not be delivered
-using `basic.deliver` (to a consumer) or included into a `basic.get-ok` response
-(for one-off fetch operations).
+The server **guarantees** that expired messages will not be delivered
+using `basic.deliver` (to a consumer) or sent in response to a polling consumer
+(in a `basic.get-ok` response).
+
 Further, the server will try to remove messages at or
 shortly after their TTL-based expiry.
 
@@ -99,7 +114,7 @@ model.QueueDeclare("myqueue", false, false, false, args);
 </pre>
 
 It is possible to apply a message TTL policy to a queue which already
-has messages in it but this involves [some caveats](#per-message-ttl-caveats).
+has messages in it but this involves [some caveats](#per-message-ttl-applied-retroactively).
 
 The original expiry time of a message is preserved if it
 is requeued (for example due to the use of an AMQP method
@@ -113,6 +128,7 @@ the `immediate` publishing flag, which
 the RabbitMQ server does not support. Unlike that flag, no
 `basic.return`s are issued, and if a dead letter
 exchange is set then messages will be dead-lettered.
+
 
 ## <a id="per-message-ttl-in-publishers" class="anchor" href="#per-message-ttl-in-publishers">Per-Message TTL in Publishers</a>
 
@@ -152,13 +168,42 @@ model.BasicPublish(exchangeName,
                    routingKey, props,
                    messageBodyBytes);</pre>
 
-## <a id="per-message-ttl-caveats" class="anchor" href="#per-message-ttl-caveats">Caveats</a>
+
+## <a id="message-ttl-dead-lettering" class="anchor" href="#message-ttl-dead-lettering">Per-Message TTL and Dead Lettering</a>
+
+For queues that have [dead-lettering configured](./dlx.html), it is important to understand
+when message expiration and dead lettering kick in for every queue type. Since
+queue types have different design goals and implementations, they drop
+expired messages (or dead letter them) under different conditions.
+
+### Quorum Queues
+
+[Quorum queues](./quorum-queues.html) dead letter expired messages shortly after message expiration.
+"Shortly after" here means that the process of dead-lettering, that is,
+republishing to the configured [DLX](./dlx.html), happens concurrently with
+other queue activity and does not await the moment when the expired
+message reaches the head of the queue.
+
+Note that **overall system load** and the **volume of expired messages**
+can affect how long it might take for deadl lettering prcedure to start
+and to to complete.
+
+### Classic Queues
+
+Classic queues dead letter expired messages in a few cases:
+
+ * When message reaches queue head
+ * When the queue is notified of a policy change that affects it
+
+
+## <a id="message-ttl-applied-retroactively" class="anchor" href="#message-ttl-applied-retroactively">Per-message TTL Applied Retroactively (to an Existing Queue)</a>
 
 Queues that had a per-message TTL applied to them
 retroactively (when they already had messages) will discard
-the messages when specific events occur. Only when expired
-messages reach the head of a queue will they actually be
-discarded (or dead-lettered). Consumers will not have
+the messages when specific events occur.
+
+Only when expired messages reach the head of a queue will they actually be
+discarded (marked for deletion). Consumers will not have
 expired messages delivered to them. Keep in mind that
 there can be a natural race condition between message expiration
 and consumer delivery, e.g. a message can expire

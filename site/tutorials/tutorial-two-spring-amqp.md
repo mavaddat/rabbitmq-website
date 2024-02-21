@@ -1,7 +1,7 @@
 # RabbitMQ tutorial - Work Queues SUPPRESS-RHS
 
 <!--
-Copyright (c) 2007-2023 VMware, Inc. or its affiliates.
+Copyright (c) 2005-2024 Broadcom. All Rights Reserved. The term "Broadcom" refers to Broadcom Inc. and/or its subsidiaries.
 
 All rights reserved. This program and the accompanying materials
 are made available under the terms of the under the Apache License,
@@ -388,7 +388,7 @@ set to 1 the behavior would be the round robin delivery as described above.
 >
 > In most of the cases `prefetchCount` equal to 1 would be too conservative and severely
 > limit consumer throughput.
-> A couple of cases where this configuration is applicable can be found in [Spring AMQP Consumer Documentation](https://docs.spring.io/spring-amqp/reference/#async-consumer)
+> A couple of cases where this configuration is applicable can be found in [Spring AMQP Consumer Documentation](https://docs.spring.io/spring-amqp/reference/amqp/containerAttributes.html#prefetchCount)
 >
 > For more details on prefetch, please refer to the [Consumer Acknowledgements guide](../confirms.html#channel-qos-prefetch).
 

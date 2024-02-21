@@ -1,5 +1,5 @@
 <!--
-Copyright (c) 2007-2023 VMware, Inc. or its affiliates.
+Copyright (c) 2005-2024 Broadcom. All Rights Reserved. The term "Broadcom" refers to Broadcom Inc. and/or its subsidiaries.
 
 All rights reserved. This program and the accompanying materials
 are made available under the terms of the under the Apache License,
@@ -252,7 +252,7 @@ function fib($n)
 
 echo " [x] Awaiting RPC requests\n";
 $callback = function ($req) {
-    $n = intval($req->body);
+    $n = intval($req->getBody());
     echo ' [.] fib(', $n, ")\n";
 
     $msg = new AMQPMessage(
@@ -260,7 +260,7 @@ $callback = function ($req) {
         array('correlation_id' => $req->get('correlation_id'))
     );
 
-    $req->delivery_info['channel']->basic_publish(
+    $req->getChannel()->basic_publish(
         $msg,
         '',
         $req->get('reply_to')
@@ -268,11 +268,13 @@ $callback = function ($req) {
     $req->ack();
 };
 
-$channel->basic_qos(null, 1, null);
+$channel->basic_qos(null, 1, false);
 $channel->basic_consume('rpc_queue', '', false, false, false, false, $callback);
 
-while ($channel->is_open()) {
-    $channel->wait();
+try {
+    $channel->consume();
+} catch (\Throwable $exception) {
+    echo $exception->getMessage();
 }
 
 $channel->close();

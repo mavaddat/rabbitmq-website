@@ -1,5 +1,5 @@
 <!--
-Copyright (c) 2007-2023 VMware, Inc. or its affiliates.
+Copyright (c) 2005-2024 Broadcom. All Rights Reserved. The term "Broadcom" refers to Broadcom Inc. and/or its subsidiaries.
 
 All rights reserved. This program and the accompanying materials
 are made available under the terms of the under the Apache License,
@@ -275,6 +275,6 @@ To run Common Test test suites, use
 
 Finally, you can produce an <code>.ez</code> file, suitable for distribution with:
 
-<pre class="lang-bash">make dist</pre>
+<pre class="lang-bash">DIST_AS_EZS=yes make dist</pre>
 
 The file appears in the <tt>plugins</tt> directory under repository root.

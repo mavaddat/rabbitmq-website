@@ -1,5 +1,5 @@
 <!--
-Copyright (c) 2007-2023 VMware, Inc. or its affiliates.
+Copyright (c) 2005-2024 Broadcom. All Rights Reserved. The term "Broadcom" refers to Broadcom Inc. and/or its subsidiaries.
 
 All rights reserved. This program and the accompanying materials
 are made available under the terms of the under the Apache License,
@@ -65,7 +65,8 @@ therefore they will be able to authenticate. No upgrade steps are required.
 When importing definitions exported from versions earlier than
 3.6.0 into a 3.6.1 or later release, existing user records will use
 MD5 for password hashing. In order to migrate them to a more secure algorithm,
-use [rabbitmqctl](./man/rabbitmqctl.8.html) to update their passwords.
+use [rabbitmqctl](./man/rabbitmqctl.8.html) or [definition import](./definitions.html)
+with an updated hash to update their passwords.
 
 
 ## <a id="credential-validation" class="anchor" href="#credential-validation">Credential Validation</a>

@@ -1,5 +1,5 @@
 <!--
-Copyright (c) 2007-2023 VMware, Inc. or its affiliates.
+Copyright (c) 2005-2024 Broadcom. All Rights Reserved. The term "Broadcom" refers to Broadcom Inc. and/or its subsidiaries.
 
 All rights reserved. This program and the accompanying materials
 are made available under the terms of the under the Apache License,
@@ -221,7 +221,7 @@ STOMP supports multiple different destinations, including those that assume pre-
 
 ### Metrics
 
-Starting with RabbitMQ 3.8, there's a new metric for unroutable dropped messages:
+There's a metric for unroutable dropped messages:
 
 <img class="screenshot" src="img/monitoring/publishers/mgmt-ui-unroutable-message-metrics.png" alt="Unroutable message metrics" title="Unroutable message metrics" />
 

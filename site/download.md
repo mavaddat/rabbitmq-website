@@ -1,5 +1,5 @@
 <!--
-Copyright (c) 2007-2023 VMware, Inc. or its affiliates.
+Copyright (c) 2005-2024 Broadcom. All Rights Reserved. The term "Broadcom" refers to Broadcom Inc. and/or its subsidiaries.
 
 All rights reserved. This program and the accompanying materials
 are made available under the terms of the under the Apache License,
@@ -20,14 +20,12 @@ limitations under the License.
 The latest [release](https://github.com/rabbitmq/rabbitmq-server/releases) of RabbitMQ is **&version-server;**. See [change log](changelog.html) for release notes.
 See [RabbitMQ support timeline](./versions.html) to find out what release series are supported.
 
-Experimenting with RabbitMQ on your workstation? Try the [community Docker image](https://registry.hub.docker.com/_/rabbitmq/):
+Experimenting with RabbitMQ on your workstation? Try the [community Docker image](https://hub.docker.com/_/rabbitmq/):
 
 <pre class="lang-bash">
 # latest RabbitMQ 3.12
 docker run -it --rm --name rabbitmq -p 5672:5672 -p 15672:15672 rabbitmq:3.12-management
 </pre>
-
-
 
 ## Open Source RabbitMQ Server
 
@@ -37,6 +35,12 @@ docker run -it --rm --name rabbitmq -p 5672:5672 -p 15672:15672 rabbitmq:3.12-ma
  * Windows: [Chocolatey package](https://community.chocolatey.org/packages/rabbitmq) | [Windows Installer](install-windows.html) | [Binary build](install-windows-manual.html)
  * MacOS: [Homebrew](install-homebrew.html) | [Generic binary build](install-generic-unix.html)
  * [Erlang/OTP for RabbitMQ](./which-erlang.html)
+
+### Preview Releases
+
+You can contribute to open source RabbitMQ by helping the community test [preview releases](https://github.com/rabbitmq/rabbitmq-server/releases).
+They are marked as pre-releases on GitHub.
+
 
 ## VMware RabbitMQ® (Commercial Edition)
 
@@ -69,7 +73,7 @@ Other guides related to Kubernetes:
 
 ## Docker
 
- * Docker community-maintained [RabbitMQ Docker image](https://registry.hub.docker.com/_/rabbitmq/) ([on GitHub](https://github.com/docker-library/rabbitmq/))
+ * Docker community-maintained [RabbitMQ Docker image](https://hub.docker.com/_/rabbitmq/) ([on GitHub](https://github.com/docker-library/rabbitmq/))
 
 
 ## Cloud
@@ -106,7 +110,7 @@ Other guides related to Kubernetes:
 
 ## Release Signing Key
 
- * [Release Signing Key](https://github.com/rabbitmq/signing-keys/releases/download/2.0/rabbitmq-release-signing-key.asc) <code>0x6B73A36E6026DFCA</code> (on GitHub)
+ * [Release Signing Key](https://github.com/rabbitmq/signing-keys/releases/download/3.0/rabbitmq-release-signing-key.asc) <code>0x6B73A36E6026DFCA</code> (on GitHub)
  * [How to Verify Release Artifact Signatures](./signatures.html)
  * [Release Signing Key](./rabbitmq-release-signing-key.asc) (alternative download location on rabbitmq.com)
 

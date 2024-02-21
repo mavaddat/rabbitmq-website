@@ -1,3 +1,20 @@
+<!--
+Copyright (c) 2005-2024 Broadcom. All Rights Reserved. The term "Broadcom" refers to Broadcom Inc. and/or its subsidiaries.
+
+All rights reserved. This program and the accompanying materials
+are made available under the terms of the under the Apache License,
+Version 2.0 (the "License”); you may not use this file except in compliance
+with the License. You may obtain a copy of the License at
+
+https://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
 # Backup and Restore
 
 ## Overview
@@ -96,18 +113,8 @@ copy the messages, skip copying the [message directories](#manual-messages-backu
 
 ### <a id="manual-definitions-restore" class="anchor" href="#manual-definitions-restore">Restoring from a Manual Definitions Backup</a>
 
-Internal node database stores node's name in certain records. Should node name change, the database must first
-be updated to reflect the change using the following [rabbitmqctl](./cli.html) command:
-
-<pre class="lang-sh">
-rabbitmqctl rename_cluster_node &lt;oldnode&gt; &lt;newnode&gt;
-</pre>
-
-The command can take multiple old name/new name pairs if multiple nodes in a cluster are being renamed
-at the same time.
-
-When a new node starts with a backed up directory and a matching node name, it should perform
-the upgrade steps as needed and proceed booting.
+To perform a restore, a new node starts with a backed up directory and the original node name.
+The node then should perform the upgrade steps as needed and proceed booting.
 
 
 ## <a id="messages-backup" class="anchor" href="#messages-backup">Backing Up Messages</a>

@@ -1,5 +1,5 @@
 <!--
-Copyright (c) 2007-2023 VMware, Inc. or its affiliates.
+Copyright (c) 2005-2024 Broadcom. All Rights Reserved. The term "Broadcom" refers to Broadcom Inc. and/or its subsidiaries.
 
 All rights reserved. This program and the accompanying materials
 are made available under the terms of the under the Apache License,
@@ -68,8 +68,8 @@ RabbitMQ and related plugins produce events with the following routing keys:
 
 Queue, Exchange and Binding events:
 
-- `queue.deleted`
 - `queue.created`
+- `queue.deleted`
 - `exchange.created`
 - `exchange.deleted`
 - `binding.created`

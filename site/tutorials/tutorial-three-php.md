@@ -1,5 +1,5 @@
 <!--
-Copyright (c) 2007-2023 VMware, Inc. or its affiliates.
+Copyright (c) 2005-2024 Broadcom. All Rights Reserved. The term "Broadcom" refers to Broadcom Inc. and/or its subsidiaries.
 
 All rights reserved. This program and the accompanying materials
 are made available under the terms of the under the Apache License,
@@ -309,13 +309,15 @@ $channel->queue_bind($queue_name, 'logs');
 echo " [*] Waiting for logs. To exit press CTRL+C\n";
 
 $callback = function ($msg) {
-    echo ' [x] ', $msg->body, "\n";
+    echo ' [x] ', $msg->getBody(), "\n";
 };
 
 $channel->basic_consume($queue_name, '', false, true, false, false, $callback);
 
-while ($channel->is_open()) {
-    $channel->wait();
+try {
+    $channel->consume();
+} catch (\Throwable $exception) {
+    echo $exception->getMessage();
 }
 
 $channel->close();

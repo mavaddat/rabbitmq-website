@@ -1,5 +1,5 @@
 <!--
-Copyright (c) 2007-2023 VMware, Inc. or its affiliates.
+Copyright (c) 2005-2024 Broadcom. All Rights Reserved. The term "Broadcom" refers to Broadcom Inc. and/or its subsidiaries.
 
 All rights reserved. This program and the accompanying materials
 are made available under the terms of the under the Apache License,
@@ -20,13 +20,13 @@ limitations under the License.
 ## <a id="overview" class="anchor" href="#overview">Overview</a>
 
 Every RabbitMQ node uses a number of files and directories
-to load configuration; store data, metadata, log files, and so on.
+to load configuration: store data, metadata, log files, and so on.
 Their location can be changed.
 
 This guide covers:
 
   * How to customise location of various directories and files used RabbitMQ nodes
-  * Default locations for various operating systems
+  * Default locations of key files and directories on various operating systems
   * Other topics related to file and directory locations
 
 This guide accompanies the main [Configuration guide](configure.html).
@@ -47,21 +47,26 @@ and so on). Those paths have must exclude a number of characters:
  * `[` and `]`
  * `{}` and `}`
 
-The above characters will render the node unable to start or function as expected (e.g. expand plugins and load their metadata).
+The above characters will render the node unable to start or function as expected (e.g. load plugin code modules and other files).
+
+### <a id="file-permissions" class="anchor" href="#file-permissions">Required File and Directory Permissions</a>
 
 When changing file or directory locations, it is important to
 make sure that they have sufficient permissions for RabbitMQ
 node OS process to read and write from. It's best to assume
 that most directories and files used by RabbitMQ require read,
-write, and file creation permissions. [Debian](./install-debian.html),
-[RPM](./install-rpm.html) and [Windows installer](./install-windows.html) scripts
+write, and file creation permissions.
+
+[Debian](./install-debian.html),
+[RPM](./install-rpm.html), [Homebrew](./install-homebrew.html) and [Windows installer](./install-windows.html) packages
 will set up file system permissions suitable for most
 environments, however, when strict default permissions are
 used system-wide, it may be necessary to run additional
 configuration steps after installation to make sure RabbitMQ node
 file and directories have sufficient permissions
 
-### <a id="environment-variables" class="anchor" href="#environment-variables">Environment Variables</a>
+
+## <a id="environment-variables" class="anchor" href="#environment-variables">Environment Variables</a>
 
 <table>
   <th>Name</th><th>Description</th>
@@ -111,7 +116,7 @@ file and directories have sufficient permissions
   <tr>
     <td>RABBITMQ_MNESIA_DIR</td>
     <td>
-      The directory where this RabbitMQ node's data is stored. This s
+      The directory where this RabbitMQ node's data is stored. This includes
       a schema database, message stores, cluster member information and other
       persistent node state.
     </td>
@@ -187,12 +192,12 @@ file and directories have sufficient permissions
 ## <a id="unix" class="anchor" href="#unix">Default Locations on Linux, macOS, BSD</a>
 
 In the following table the `${install_prefix}` to
-some paths is indicated. Homebrew installations use the
-<i>installation-prefix</i> (Homebrew Cellar) when installed. By
-default this is `/usr/local`.
-
-Debian and RPM package installations use an empty
+some paths is indicated. Debian and RPM package installations use an empty
 `${install_prefix}`.
+
+[Homebrew installations](/install-homebrew.html) use the
+**installation-prefix** (Homebrew Cellar) when installed. By
+default this is `/opt/homebrew` on Apple Silicon-based Macs.
 
 <table>
   <th>Name</th><th>Location</th>
@@ -346,10 +351,13 @@ Debian and RPM package installations use an empty
 
 ## <a id="binary-build" class="anchor" href="#binary-build">Generic Binary Build Defaults</a>
 
-These are the defaults obtained when unpacking the Generic
-Unix tar-file and running the server without modification. In
+These are the defaults obtained when a generic binary build
+archive is unpacked without any modification. In
 this table <span class="envvar">$RABBITMQ_HOME</span> refers
 to the directory produced when extracting the archive.
+
+These paths are not relevant for installation options that use the same package type but heavily
+customize it, such as the [Homebrew formula](/install-homebrew.html).
 
 <table>
   <th>Name</th><th>Location</th>

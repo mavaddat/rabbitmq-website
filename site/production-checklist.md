@@ -1,5 +1,5 @@
 <!--
-Copyright (c) 2007-2023 VMware, Inc. or its affiliates.
+Copyright (c) 2005-2024 Broadcom. All Rights Reserved. The term "Broadcom" refers to Broadcom Inc. and/or its subsidiaries.
 
 All rights reserved. This program and the accompanying materials
 are made available under the terms of the under the Apache License,
@@ -38,13 +38,66 @@ to size and configure both RabbitMQ nodes and applications.
 
 This guide provides recommendations in a few areas:
 
+ * [Storage](#storage) considerations for node data directories
+ * [Networking](#networking)-related recommendations
  * Recommendations related to [virtual hosts, users and permissions](#users-and-permissions)
  * [Monitoring and resource usage](#monitoring-and-resource-usage)
+ * [Per-virtual host and per-user limits](#limits)
  * [Security](#security)
  * [Clustering](#clustering) and multi-node deployments
  * [Application-level](#apps) practices and considerations
 
 and more.
+
+## <a id="storage" class="anchor" href="#storage">Storage Considerations</a>
+
+### <a id="storage-durability" class="anchor" href="#storage-durability">Use Durable Storage</a>
+
+Modern RabbitMQ 3.x features, most notably quorum queues and streams, are not designed with transient storage in mind.
+
+Data safety features of [quorum queues](./quorum-queues.html) and [streams](./streams.html) expect
+node data storage to be durable. Both data structures also assume reasonably stable latency of I/O
+operations, something that network-attached storage will not be always ready to provide in practice.
+
+Quorum queue and stream replicas hosted on restarted nodes that use transient storage will have
+to perform a full sync of the entire data set on the leader replica. This can result in massive
+data transfers and network link overload that could have been avoided by using durable storage.
+
+When nodes are restarted, the rest of the cluster expects them to retain the information
+about their cluster peers. When this is not the case, restarted nodes may be able to rejoin
+as new nodes but a [special peer clean up mechanism](https://rabbitmq.com/cluster-formation.html#node-health-checks-and-cleanup)
+would have to be enabled to remove their prior identities.
+
+Transient entities (such as queues) and RAM node support will be removed in RabbitMQ 4.0.
+
+### <a id="storage-nas" class="anchor" href="#storage-nas">Network-attached Storage (NAS)</a>
+
+Network-attached storage (NAS) can be used for RabbitMQ node data directories, provided that
+the NAS volume
+
+ * It offers low I/O latency
+ * It can guarantee no significant latency spikes (for example, due to sharing with other I/O-heavy services)
+
+Quorum queues, streams, and other RabbitMQ features will benefit from fast local SSD and NVMe storage.
+When possible, prefer local storage to NAS.
+
+### <a id="storage-isolation" class="anchor" href="#storage-isolation">Storage Isolation</a>
+
+RabbitMQ nodes must never share their data directories. Ideally, should not share their
+disk I/O with other services for most predictable latency and throughput.
+
+### <a id="storage-filesystems" class="anchor" href="#storage-filesystems">Choice of a Filesystem</a>
+
+RabbitMQ nodes can use most widely used local filesystems: ext4, btfs, and so on.
+
+Avoid using distributed filesystems for node data directories:
+
+ * RabbitMQ's storage subsystem assumes the standard local filesystem semantics for `fsync(2)`
+   and other key operations. Distributed filesystems often [deviate from these standard guarantees](https://docs.ceph.com/en/latest/cephfs/posix/)
+ * Distributed filesystems are usually designed for shared access to a subset of directories.
+   Sharing a data directory between RabbitMQ nodes is **an absolute no-no** and
+   is guaranteed to result in data corruption since nodes will not coordinate their writes
+
 
 ## <a id="users-and-permissions" class="anchor" href="#users-and-permissions">Virtual Hosts, Users, Permissions</a>
 
@@ -70,8 +123,6 @@ For production environments, delete the default user (`guest`).
 Default user only can connect from localhost by default, because it has well-known
 credentials. Instead of enabling remote connections, consider creating a separate user
 with administrative permissions and a generated password.
-
-
 
 It is recommended to use a separate user per application. For example, if you
 have a mobile app, a Web app, and a data aggregation system, you'd have 3
@@ -152,30 +203,44 @@ following:
 
 <ul class="plain">
   <li>
-    <code>disk_free_limit.relative = 1.0</code> is the
-    minimum recommended value and it translates to the total amount of
-    memory available. For example, on a host dedicated to
-    RabbitMQ with 4GB of system memory, if available disk space drops
-    below 4GB, all publishers will be blocked and no new messages
-    will be accepted. Queues will need to be drained, normally by
-    consumers, before publishing will be allowed to resume.
+    <p>
+      The minimum recommended free disk space low watermark value is about the same
+      as the high memory watermark. For example, on a node configured to have its memory watermark of 4GB,
+      <code>disk_free_limit.absolute = 4G</code> would be a recommended minimum.
+    </p>
+
+    <p>
+      In the example above, if available disk space drops
+      below 4GB, all publishers will be blocked and no new messages
+      will be accepted. Queues will need to be drained by
+      consumers before publishing will be allowed to resume.
+    </p>
   </li>
   <li>
-    <code>disk_free_limit.relative = 1.5</code> is a
-    safer production value. On a RabbitMQ node with 4GB of
-    memory, if available disk space drops below 6GB, all new messages
-    will be blocked until the disk alarm clears. If RabbitMQ needs to
-    flush to disk 4GB worth of data, as can sometimes be the case during
-    shutdown, there will be sufficient disk space available for RabbitMQ
-    to start again. In this specific example, RabbitMQ will start and
-    immediately block all publishers since 2GB is well under the required
-    6GB.
+    <p>
+      Continuing with the example above, <code>disk_free_limit.absolute = 6G</code>
+      is a safer value.
+    </p>
+
+    <p>
+      If RabbitMQ needs to
+      flush to disk up to its high memory watermark worth of data, as can sometimes be the case during
+      shutdown, there will be sufficient disk space available for RabbitMQ
+      to start again in all but the most pessimistic scenarios.
+      6GB
+    </p>
   </li>
   <li>
-    <code>disk_free_limit.relative = 2.0</code> is the
-    most conservative production value, we cannot think of any reason to use
-    anything higher. If you want full confidence in RabbitMQ having
-    all the disk space that it needs, at all times, this is the value to use.
+    <p>
+      Continuing with the example above, <code>disk_free_limit.absolute = 8G</code>
+      is the safest value to use.
+    </p>
+
+    <p>
+      It should be enough disk space for the most pessimistic scenario where a node first has to move
+      up its high memory watermark worth of data (so, about 4 GiB) to disk, and then perform an on disk
+      data operation that could temporarily nearly double the amount of disk space used.
+    </p>
   </li>
 </ul>
 
@@ -200,6 +265,19 @@ See [Networking guide](networking.html) for more information.
 
 It is highly recommended that logs of all RabbitMQ nodes and applications (when possible) are collected
 and aggregated. Logs can be crucially important in investigating unusual system behaviour.
+
+
+## <a id="limits" class="anchor" href="#limits">Per-Virtual Host and Per-User Resource Limits</a>
+
+It is possible to [limit the maximum number of concurrent connections and queues](./vhosts.html#limits) a virtual host will
+allow the users to open (declare).
+
+These limits can be used as guard rails in environments where applications
+cannot be trusted and monitored in detail, for example, when RabbitMQ clusters
+are offered as a service.
+
+Similarly, it is possible to [configure concurrent connection and channel limits
+for individual users](./user-limits.html).
 
 
 ## <a id="security" class="anchor" href="#security">Security Considerations</a>
@@ -252,8 +330,8 @@ Self-signed certificates can be appropriate in production environments when
 RabbitMQ and all applications run on a trusted network or isolated using technologies
 such as VMware NSX.
 
-While RabbitMQ tries to offer a secure TLS configuration by
-default (for example, SSLv3 is deactivated), we recommend evaluating
+While RabbitMQ tries to offer a reasonably secure TLS configuration by
+default, it is highly recommended evaluating
 TLS configuration (versions cipher suites and so on) using tools such as [testssl.sh](https://testssl.sh/).
 Please refer to the [TLS guide](ssl.html) to learn more.
 
@@ -266,6 +344,35 @@ including CPU usage of both RabbitMQ and applications that use it.
 Production environments may require network configuration
 tuning, for example, to sustain a high number of concurrent clients.
 Please refer to the [Networking Guide](networking.html) for details.
+
+### <a id="networking-throughput" class="anchor" href="#networking-throughput">Minimum Available Network Throughput Estimate</a>
+
+With higher message rates and large message payloads, traffic bandwidth available to cluster nodes becomes an important
+factor.
+
+The following (intentionally oversimplified) formula can be used to compute the **minimum amount of bandwidth**
+that must be available to cluster nodes, in bits per second:
+
+<pre class="lang-ini">
+MR * MS * 110% * 8
+</pre>
+
+where
+
+ * `MR`: 95th percentile message rate per second
+ * `MS`: 95th percentile message size, in bytes
+ * 110%: accounts for message properties, protocol metadata, and other data transferred
+ * 8: bits per byte
+
+For example, with a message rate (`MR`) of 20K per second and 6 KB message payloads (`MS`):
+
+<pre class="lang-ini">
+20K * 6 KB * 110% * 8 bit/B = 20000 * 6000 * 1.1 * 8 = 1.056 (gigabit/second)
+</pre>
+
+With the above inputs, cluster nodes must have network links with throughput of at least 1.056 gigabit per second.
+
+This formula **is a rule of thumb** and does not consider protocol- or workload-specific nuances.
 
 
 ## <a id="clustering" class="anchor" href="#clustering">Clustering Considerations</a>

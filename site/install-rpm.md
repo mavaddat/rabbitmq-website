@@ -1,5 +1,5 @@
 <!--
-Copyright (c) 2007-2023 VMware, Inc. or its affiliates.
+Copyright (c) 2005-2024 Broadcom. All Rights Reserved. The term "Broadcom" refers to Broadcom Inc. and/or its subsidiaries.
 
 All rights reserved. This program and the accompanying materials
 are made available under the terms of the under the Apache License,
@@ -62,14 +62,13 @@ CentOS 7 and Fedora releases older than 26 are examples of such distributions.
 
 Currently the list of supported RPM-based distributions includes
 
- * Fedora 34 through 38
- * [CentOS Stream](https://centos.org/centos-stream/) 9.x
- * [CentOS Stream](https://www.centos.org/centos-stream/) 8.x
- * RedHat Enterprise Linux 8.x
+ * Fedora 35 through 39
+ * [CentOS Stream](https://centos.org/centos-stream/) 9.x and 8.x
+ * RedHat Enterprise Linux 9.x and 8.x
  * Amazon Linux 2023
- * Rocky Linux
- * Alma Linux
- * Oracle Linux
+ * Rocky Linux 9.x and 8.x
+ * Alma Linux 9.x and 8.x
+ * Oracle Linux 9.x and 8.x
  * openSUSE Leap 15.3 and later versions
 
 The packages may work on other RPM-based distributions
@@ -87,7 +86,7 @@ In environments where `sudo` isn't available, consider using the
 ## <a id="install-erlang" class="anchor" href="#install-erlang">Install Erlang</a>
 
 Before installing RabbitMQ, you must install a [supported version](which-erlang.html) of Erlang/OTP.
-Standard Red Hat, Fedora, CentOS repositories provide Erlang versions that are typically [out of date](which-erlang.html)
+Standard Red Hat, CentOS Stream, and CentOS-derivative repositories provide Erlang versions that are typically [out of date](which-erlang.html)
 and cannot be used to run latest RabbitMQ releases.
 
 There are three alternative sources for modern Erlang on RPM-based distributions:
@@ -95,6 +94,7 @@ There are three alternative sources for modern Erlang on RPM-based distributions
  * Team RabbitMQ produces [a package](https://github.com/rabbitmq/erlang-rpm) stripped
    down to only provide those components needed to run
    RabbitMQ. This is the recommended option.
+ * Fedora provides [up-to-date Erlang packages](https://packages.fedoraproject.org/pkgs/erlang/erlang/)
  * [openSUSE](https://www.opensuse.org/) produces [Erlang packages](https://software.opensuse.org/download.html?project=devel%3Alanguages%3Aerlang%3AFactory&package=erlang) for openSUSE Leap
  * [Erlang Solutions](https://www.erlang-solutions.com/resources/download.html) produces packages that are usually reasonably up to
    date and involve installation of a potentially excessive list of dependencies
@@ -160,11 +160,11 @@ in the process is to import the signing key
 
 <pre class="lang-bash">
 ## primary RabbitMQ signing key
-rpm --import https://github.com/rabbitmq/signing-keys/releases/download/2.0/rabbitmq-release-signing-key.asc
+rpm --import 'https://github.com/rabbitmq/signing-keys/releases/download/3.0/rabbitmq-release-signing-key.asc'
 ## modern Erlang repository
-rpm --import 'https://dl.cloudsmith.io/public/rabbitmq/rabbitmq-erlang/gpg.E495BB49CC4BBE5B.key'
+rpm --import 'https://github.com/rabbitmq/signing-keys/releases/download/3.0/cloudsmith.rabbitmq-erlang.E495BB49CC4BBE5B.key'
 ## RabbitMQ server repository
-rpm --import 'https://dl.cloudsmith.io/public/rabbitmq/rabbitmq-server/gpg.9F4587F226208342.key'
+rpm --import 'https://github.com/rabbitmq/signing-keys/releases/download/3.0/cloudsmith.rabbitmq-server.9F4587F226208342.key'
 </pre>
 
 ### Add Yum Repositories for RabbitMQ and Modern Erlang
@@ -179,6 +179,8 @@ The following example sets up a repository that will install RabbitMQ and its Er
 a Cloudsmith mirror, and targets **CentOS Stream 8**. The same repository definition **can be used by recent Fedora releases**,
 and Amazon Linux 2023.
 
+These repository mirrors only provide 64-bit x86 (`amd64`) packages of Erlang.
+
 <pre class="lang-ini">
 # In /etc/yum.repos.d/rabbitmq.repo
 
@@ -188,12 +190,14 @@ and Amazon Linux 2023.
 
 [modern-erlang]
 name=modern-erlang-el8
-# uses a Cloudsmith mirror @ yum1.novemberain.com.
-# Unlike Cloudsmith, it does not have traffic quotas
+# uses a Cloudsmith mirror @ yum.novemberain.com in addition to its Cloudsmith upstream.
+# Unlike Cloudsmith, the mirror does not have any traffic quotas
 baseurl=https://yum1.novemberain.com/erlang/el/8/$basearch
+        https://yum2.novemberain.com/erlang/el/8/$basearch
+        https://dl.cloudsmith.io/public/rabbitmq/rabbitmq-erlang/rpm/el/8/$basearch
 repo_gpgcheck=1
 enabled=1
-gpgkey=https://dl.cloudsmith.io/public/rabbitmq/rabbitmq-erlang/gpg.E495BB49CC4BBE5B.key
+gpgkey=https://github.com/rabbitmq/signing-keys/releases/download/3.0/cloudsmith.rabbitmq-erlang.E495BB49CC4BBE5B.key
 gpgcheck=1
 sslverify=1
 sslcacert=/etc/pki/tls/certs/ca-bundle.crt
@@ -204,13 +208,15 @@ type=rpm-md
 
 [modern-erlang-noarch]
 name=modern-erlang-el8-noarch
-# uses a Cloudsmith mirror @ yum1.novemberain.com.
-# Unlike Cloudsmith, it does not have traffic quotas
+# uses a Cloudsmith mirror @ yum.novemberain.com.
+# Unlike Cloudsmith, it does not have any traffic quotas
 baseurl=https://yum1.novemberain.com/erlang/el/8/noarch
+        https://yum2.novemberain.com/erlang/el/8/noarch
+        https://dl.cloudsmith.io/public/rabbitmq/rabbitmq-erlang/rpm/el/8/noarch
 repo_gpgcheck=1
 enabled=1
-gpgkey=https://dl.cloudsmith.io/public/rabbitmq/rabbitmq-erlang/gpg.E495BB49CC4BBE5B.key
-       https://github.com/rabbitmq/signing-keys/releases/download/2.0/rabbitmq-release-signing-key.asc
+gpgkey=https://github.com/rabbitmq/signing-keys/releases/download/3.0/cloudsmith.rabbitmq-erlang.E495BB49CC4BBE5B.key
+       https://github.com/rabbitmq/signing-keys/releases/download/3.0/rabbitmq-release-signing-key.asc
 gpgcheck=1
 sslverify=1
 sslcacert=/etc/pki/tls/certs/ca-bundle.crt
@@ -221,13 +227,15 @@ type=rpm-md
 
 [modern-erlang-source]
 name=modern-erlang-el8-source
-# uses a Cloudsmith mirror @ yum1.novemberain.com.
-# Unlike Cloudsmith, it does not have traffic quotas
+# uses a Cloudsmith mirror @ yum.novemberain.com.
+# Unlike Cloudsmith, it does not have any traffic quotas
 baseurl=https://yum1.novemberain.com/erlang/el/8/SRPMS
+        https://yum2.novemberain.com/erlang/el/8/SRPMS
+        https://dl.cloudsmith.io/public/rabbitmq/rabbitmq-erlang/rpm/el/8/SRPMS
 repo_gpgcheck=1
 enabled=1
-gpgkey=https://dl.cloudsmith.io/public/rabbitmq/rabbitmq-erlang/gpg.E495BB49CC4BBE5B.key
-       https://github.com/rabbitmq/signing-keys/releases/download/2.0/rabbitmq-release-signing-key.asc
+gpgkey=https://github.com/rabbitmq/signing-keys/releases/download/3.0/cloudsmith.rabbitmq-erlang.E495BB49CC4BBE5B.key
+       https://github.com/rabbitmq/signing-keys/releases/download/3.0/rabbitmq-release-signing-key.asc
 gpgcheck=1
 sslverify=1
 sslcacert=/etc/pki/tls/certs/ca-bundle.crt
@@ -242,12 +250,14 @@ autorefresh=1
 
 [rabbitmq-el8]
 name=rabbitmq-el8
-baseurl=https://yum1.novemberain.com/rabbitmq/el/8/$basearch
+baseurl=https://yum2.novemberain.com/rabbitmq/el/8/$basearch
+        https://yum1.novemberain.com/rabbitmq/el/8/$basearch
+        https://dl.cloudsmith.io/public/rabbitmq/rabbitmq-server/rpm/el/8/$basearch
 repo_gpgcheck=1
 enabled=1
 # Cloudsmith's repository key and RabbitMQ package signing key
-gpgkey=https://dl.cloudsmith.io/public/rabbitmq/rabbitmq-server/gpg.9F4587F226208342.key
-       https://github.com/rabbitmq/signing-keys/releases/download/2.0/rabbitmq-release-signing-key.asc
+gpgkey=https://github.com/rabbitmq/signing-keys/releases/download/3.0/cloudsmith.rabbitmq-server.9F4587F226208342.key
+       https://github.com/rabbitmq/signing-keys/releases/download/3.0/rabbitmq-release-signing-key.asc
 gpgcheck=1
 sslverify=1
 sslcacert=/etc/pki/tls/certs/ca-bundle.crt
@@ -258,12 +268,14 @@ type=rpm-md
 
 [rabbitmq-el8-noarch]
 name=rabbitmq-el8-noarch
-baseurl=https://yum1.novemberain.com/rabbitmq/el/8/noarch
+baseurl=https://yum2.novemberain.com/rabbitmq/el/8/noarch
+        https://yum1.novemberain.com/rabbitmq/el/8/noarch
+        https://dl.cloudsmith.io/public/rabbitmq/rabbitmq-server/rpm/el/8/noarch
 repo_gpgcheck=1
 enabled=1
 # Cloudsmith's repository key and RabbitMQ package signing key
-gpgkey=https://dl.cloudsmith.io/public/rabbitmq/rabbitmq-server/gpg.9F4587F226208342.key
-       https://github.com/rabbitmq/signing-keys/releases/download/2.0/rabbitmq-release-signing-key.asc
+gpgkey=https://github.com/rabbitmq/signing-keys/releases/download/3.0/cloudsmith.rabbitmq-server.9F4587F226208342.key
+       https://github.com/rabbitmq/signing-keys/releases/download/3.0/rabbitmq-release-signing-key.asc
 gpgcheck=1
 sslverify=1
 sslcacert=/etc/pki/tls/certs/ca-bundle.crt
@@ -274,10 +286,12 @@ type=rpm-md
 
 [rabbitmq-el8-source]
 name=rabbitmq-el8-source
-baseurl=https://yum1.novemberain.com/rabbitmq/el/8/SRPMS
+baseurl=https://yum2.novemberain.com/rabbitmq/el/8/SRPMS
+        https://yum1.novemberain.com/rabbitmq/el/8/SRPMS
+        https://dl.cloudsmith.io/public/rabbitmq/rabbitmq-server/rpm/el/8/SRPMS
 repo_gpgcheck=1
 enabled=1
-gpgkey=https://dl.cloudsmith.io/public/rabbitmq/rabbitmq-server/gpg.9F4587F226208342.key
+gpgkey=https://github.com/rabbitmq/signing-keys/releases/download/3.0/cloudsmith.rabbitmq-server.9F4587F226208342.key
 gpgcheck=0
 sslverify=1
 sslcacert=/etc/pki/tls/certs/ca-bundle.crt
@@ -287,11 +301,13 @@ autorefresh=1
 type=rpm-md
 </pre>
 
-#### Red Hat 9, CentOS Stream 9, Modern Fedora Releases
+#### Red Hat 9, CentOS Stream 9, Rocky Linux 9, Alma Linux 9, Modern Fedora Releases
 
 The following example sets up a repository that will install RabbitMQ and its Erlang dependency from
 a Cloudsmith mirror,
 and targets **CentOS Stream 9**, Amazon Linux 2023, and modern Fedora releases.
+
+These repository mirrors only provide 64-bit x86 (`amd64`) packages of Erlang.
 
 <pre class="lang-ini">
 # In /etc/yum.repos.d/rabbitmq.repo
@@ -302,12 +318,14 @@ and targets **CentOS Stream 9**, Amazon Linux 2023, and modern Fedora releases.
 
 [modern-erlang]
 name=modern-erlang-el9
-# uses a Cloudsmith mirror @ yum1.novemberain.com.
-# Unlike Cloudsmith, it does not have traffic quotas
+# uses a Cloudsmith mirror @ yum.novemberain.com.
+# Unlike Cloudsmith, it does not have any traffic quotas
 baseurl=https://yum1.novemberain.com/erlang/el/9/$basearch
+        https://yum2.novemberain.com/erlang/el/9/$basearch
+        https://dl.cloudsmith.io/public/rabbitmq/rabbitmq-erlang/rpm/el/9/$basearch
 repo_gpgcheck=1
 enabled=1
-gpgkey=https://dl.cloudsmith.io/public/rabbitmq/rabbitmq-erlang/gpg.E495BB49CC4BBE5B.key
+gpgkey=https://github.com/rabbitmq/signing-keys/releases/download/3.0/cloudsmith.rabbitmq-erlang.E495BB49CC4BBE5B.key
 gpgcheck=1
 sslverify=1
 sslcacert=/etc/pki/tls/certs/ca-bundle.crt
@@ -318,13 +336,15 @@ type=rpm-md
 
 [modern-erlang-noarch]
 name=modern-erlang-el9-noarch
-# uses a Cloudsmith mirror @ yum1.novemberain.com.
-# Unlike Cloudsmith, it does not have traffic quotas
+# uses a Cloudsmith mirror @ yum.novemberain.com.
+# Unlike Cloudsmith, it does not have any traffic quotas
 baseurl=https://yum1.novemberain.com/erlang/el/9/noarch
+        https://yum2.novemberain.com/erlang/el/9/noarch
+        https://dl.cloudsmith.io/public/rabbitmq/rabbitmq-erlang/rpm/el/9/noarch
 repo_gpgcheck=1
 enabled=1
-gpgkey=https://dl.cloudsmith.io/public/rabbitmq/rabbitmq-erlang/gpg.E495BB49CC4BBE5B.key
-       https://github.com/rabbitmq/signing-keys/releases/download/2.0/rabbitmq-release-signing-key.asc
+gpgkey=https://github.com/rabbitmq/signing-keys/releases/download/3.0/cloudsmith.rabbitmq-erlang.E495BB49CC4BBE5B.key
+       https://github.com/rabbitmq/signing-keys/releases/download/3.0/rabbitmq-release-signing-key.asc
 gpgcheck=1
 sslverify=1
 sslcacert=/etc/pki/tls/certs/ca-bundle.crt
@@ -335,13 +355,15 @@ type=rpm-md
 
 [modern-erlang-source]
 name=modern-erlang-el9-source
-# uses a Cloudsmith mirror @ yum1.novemberain.com.
-# Unlike Cloudsmith, it does not have traffic quotas
+# uses a Cloudsmith mirror @ yum.novemberain.com.
+# Unlike Cloudsmith, it does not have any traffic quotas
 baseurl=https://yum1.novemberain.com/erlang/el/9/SRPMS
+        https://yum2.novemberain.com/erlang/el/9/SRPMS
+        https://dl.cloudsmith.io/public/rabbitmq/rabbitmq-erlang/rpm/el/9/SRPMS
 repo_gpgcheck=1
 enabled=1
-gpgkey=https://dl.cloudsmith.io/public/rabbitmq/rabbitmq-erlang/gpg.E495BB49CC4BBE5B.key
-       https://github.com/rabbitmq/signing-keys/releases/download/2.0/rabbitmq-release-signing-key.asc
+gpgkey=https://github.com/rabbitmq/signing-keys/releases/download/3.0/cloudsmith.rabbitmq-erlang.E495BB49CC4BBE5B.key
+       https://github.com/rabbitmq/signing-keys/releases/download/3.0/rabbitmq-release-signing-key.asc
 gpgcheck=1
 sslverify=1
 sslcacert=/etc/pki/tls/certs/ca-bundle.crt
@@ -356,12 +378,14 @@ autorefresh=1
 
 [rabbitmq-el9]
 name=rabbitmq-el9
-baseurl=https://yum1.novemberain.com/rabbitmq/el/9/$basearch
+baseurl=https://yum2.novemberain.com/rabbitmq/el/9/$basearch
+        https://yum1.novemberain.com/rabbitmq/el/9/$basearch
+        https://dl.cloudsmith.io/public/rabbitmq/rabbitmq-server/rpm/el/9/$basearch
 repo_gpgcheck=1
 enabled=1
 # Cloudsmith's repository key and RabbitMQ package signing key
-gpgkey=https://dl.cloudsmith.io/public/rabbitmq/rabbitmq-server/gpg.9F4587F226208342.key
-       https://github.com/rabbitmq/signing-keys/releases/download/2.0/rabbitmq-release-signing-key.asc
+gpgkey=https://github.com/rabbitmq/signing-keys/releases/download/3.0/cloudsmith.rabbitmq-server.9F4587F226208342.key
+       https://github.com/rabbitmq/signing-keys/releases/download/3.0/rabbitmq-release-signing-key.asc
 gpgcheck=1
 sslverify=1
 sslcacert=/etc/pki/tls/certs/ca-bundle.crt
@@ -372,12 +396,14 @@ type=rpm-md
 
 [rabbitmq-el9-noarch]
 name=rabbitmq-el9-noarch
-baseurl=https://yum1.novemberain.com/rabbitmq/el/9/noarch
+baseurl=https://yum2.novemberain.com/rabbitmq/el/9/noarch
+        https://yum1.novemberain.com/rabbitmq/el/9/noarch
+        https://dl.cloudsmith.io/public/rabbitmq/rabbitmq-server/rpm/el/9/noarch
 repo_gpgcheck=1
 enabled=1
 # Cloudsmith's repository key and RabbitMQ package signing key
-gpgkey=https://dl.cloudsmith.io/public/rabbitmq/rabbitmq-server/gpg.9F4587F226208342.key
-       https://github.com/rabbitmq/signing-keys/releases/download/2.0/rabbitmq-release-signing-key.asc
+gpgkey=https://github.com/rabbitmq/signing-keys/releases/download/3.0/cloudsmith.rabbitmq-server.9F4587F226208342.key
+       https://github.com/rabbitmq/signing-keys/releases/download/3.0/rabbitmq-release-signing-key.asc
 gpgcheck=1
 sslverify=1
 sslcacert=/etc/pki/tls/certs/ca-bundle.crt
@@ -388,10 +414,12 @@ type=rpm-md
 
 [rabbitmq-el9-source]
 name=rabbitmq-el9-source
-baseurl=https://yum1.novemberain.com/rabbitmq/el/9/SRPMS
+baseurl=https://yum2.novemberain.com/rabbitmq/el/9/SRPMS
+        https://yum1.novemberain.com/rabbitmq/el/9/SRPMS
+        https://dl.cloudsmith.io/public/rabbitmq/rabbitmq-server/rpm/el/9/SRPMS
 repo_gpgcheck=1
 enabled=1
-gpgkey=https://dl.cloudsmith.io/public/rabbitmq/rabbitmq-server/gpg.9F4587F226208342.key
+gpgkey=https://github.com/rabbitmq/signing-keys/releases/download/3.0/cloudsmith.rabbitmq-server.9F4587F226208342.key
 gpgcheck=0
 sslverify=1
 sslcacert=/etc/pki/tls/certs/ca-bundle.crt
@@ -416,7 +444,7 @@ name=rabbitmq_server
 baseurl=https://dl.cloudsmith.io/public/rabbitmq/rabbitmq-server/rpm/opensuse/15.1/$basearch
 repo_gpgcheck=1
 enabled=1
-gpgkey=https://dl.cloudsmith.io/public/rabbitmq/rabbitmq-server/gpg.9F4587F226208342.key
+gpgkey=https://github.com/rabbitmq/signing-keys/releases/download/3.0/cloudsmith.rabbitmq-server.9F4587F226208342.key
 gpgcheck=1
 sslverify=1
 sslcacert=/etc/pki/tls/certs/ca-bundle.crt
@@ -430,7 +458,7 @@ name=rabbitmq_server-noarch
 baseurl=https://dl.cloudsmith.io/public/rabbitmq/rabbitmq-server/rpm/opensuse/15.1/noarch
 repo_gpgcheck=1
 enabled=1
-gpgkey=https://dl.cloudsmith.io/public/rabbitmq/rabbitmq-server/gpg.9F4587F226208342.key
+gpgkey=https://github.com/rabbitmq/signing-keys/releases/download/3.0/cloudsmith.rabbitmq-server.9F4587F226208342.key
 gpgcheck=1
 sslverify=1
 sslcacert=/etc/pki/tls/certs/ca-bundle.crt
@@ -444,7 +472,7 @@ name=rabbitmq_server-source
 baseurl=https://dl.cloudsmith.io/public/rabbitmq/rabbitmq-server/rpm/opensuse/15.1/SRPMS
 repo_gpgcheck=1
 enabled=1
-gpgkey=https://dl.cloudsmith.io/public/rabbitmq/rabbitmq-server/gpg.9F4587F226208342.key
+gpgkey=https://github.com/rabbitmq/signing-keys/releases/download/3.0/cloudsmith.rabbitmq-server.9F4587F226208342.key
 gpgcheck=1
 sslverify=1
 sslcacert=/etc/pki/tls/certs/ca-bundle.crt
@@ -454,9 +482,8 @@ autorefresh=1
 type=rpm-md
 </pre>
 
-### Install Packages with dnf (yum)
 
-#### Red Hat 8, CentOS Stream 9, CentOS 8, Modern Fedora
+### Install Packages with dnf (yum)
 
 Update package metadata:
 
@@ -474,12 +501,8 @@ dnf install socat logrotate -y
 Finally, install modern Erlang and RabbitMQ:
 
 <pre class="lang-bash">
-## install RabbitMQ and zero dependency Erlang from the above repositories,
-## ignoring any versions provided by the standard repositories
-##
-## This installs Erlang 25.3.x because there is no Erlang 26-compatible
-## GA release of RabbitMQ at the moment
-dnf install -y erlang-25.3.2 rabbitmq-server
+## install RabbitMQ and zero dependency Erlang
+dnf install -y erlang rabbitmq-server
 </pre>
 
 ### Install Packages with Zypper
@@ -516,7 +539,7 @@ After [downloading](#downloads) the server package, issue the following command 
 'root':
 
 <pre class="lang-bash">
-rpm --import https://github.com/rabbitmq/signing-keys/releases/download/2.0/rabbitmq-release-signing-key.asc
+rpm --import https://github.com/rabbitmq/signing-keys/releases/download/3.0/rabbitmq-release-signing-key.asc
 
 ## install these dependencies from standard OS repositories
 dnf install socat logrotate -y
@@ -554,7 +577,7 @@ from [GitHub](https://github.com/rabbitmq/rabbitmq-server/releases).
 
   <tr>
     <td>
-      RPM for RHEL Linux 8.x and 9.x, CentOS Stream 8 and 9, Fedora 34+, Amazon Linux 2023, Rocky Linux, Alma Linux
+      RPM for RHEL Linux 8.x and 9.x, CentOS Stream 8 and 9, Fedora 35+, Amazon Linux 2023, Rocky Linux, Alma Linux
     </td>
     <td>
       <a href="https://github.com/rabbitmq/rabbitmq-server/releases/download/&version-server-tag;/rabbitmq-server-&version-server;-&serverRPMMinorVersion;.el8.noarch.rpm">rabbitmq-server-&version-server;-&serverRPMMinorVersion;.el8.noarch.rpm</a>
@@ -587,25 +610,18 @@ RabbitMQ server package is installed. To start the daemon by default
 when the system boots, as an administrator run
 
 <pre class="lang-bash">
-chkconfig rabbitmq-server on
+systemctl enable rabbitmq-server
 </pre>
 
 As an administrator, start and stop the
-server as usual, e.g. using `service`:
+server as usual, e.g. using `systemctl`:
 
 <pre class="lang-bash">
-/sbin/service rabbitmq-server start
+systemctl start rabbitmq-server
 
-/sbin/service rabbitmq-server status
+systemctl status  rabbitmq-server
 
-/sbin/service rabbitmq-server stop
-</pre>
-
-If the `service` tool is not installed on the system, it can be installed
-using `yum`:
-
-<pre class="lang-bash">
-yum -y install initscripts
+systemctl stop rabbitmq-server
 </pre>
 
 
@@ -637,8 +653,7 @@ used when connecting to the broker as localhost</strong> so you
 will need to take action before connecting from any other
 machine.
 
-See the documentation on [access
-control](access-control.html) for information on how to create more users and delete
+See the documentation on [access control](./access-control.html) for information on how to create more users and delete
 the `guest` user.
 
 
@@ -774,7 +789,7 @@ Redirecting to /bin/systemctl status rabbitmq-server.service
            └─2861 inet_gethost 4
 
 Dec 26 10:21:30 localhost.localdomain rabbitmq-server[957]: ##  ##
-Dec 26 10:21:30 localhost.localdomain rabbitmq-server[957]: ##  ##      RabbitMQ 3.11.5. Copyright (c) 2007-2023 VMware, Inc. or its affiliates.
+Dec 26 10:21:30 localhost.localdomain rabbitmq-server[957]: ##  ##      RabbitMQ 3.12.1. Copyright (c) 2005-2024 Broadcom. All Rights Reserved. The term "Broadcom" refers to Broadcom Inc. and/or its subsidiaries.
 Dec 26 10:21:30 localhost.localdomain rabbitmq-server[957]: ##########  Licensed under the MPL 2.0. Website: https://www.rabbitmq.com/
 Dec 26 10:21:30 localhost.localdomain rabbitmq-server[957]: ######  ##
 Dec 26 10:21:30 localhost.localdomain rabbitmq-server[957]: ##########  Logs: /var/log/rabbitmq/rabbit@localhost.log
@@ -832,7 +847,7 @@ The output will look similar to this:
 
 <pre class="lang-ini">
 Dec 26 11:03:04 localhost rabbitmq-server[968]: ##  ##
-Dec 26 11:03:04 localhost rabbitmq-server[968]: ##  ##      RabbitMQ 3.11.5. Copyright (c) 2007-2023 VMware, Inc. or its affiliates.
+Dec 26 11:03:04 localhost rabbitmq-server[968]: ##  ##      RabbitMQ 3.12.1. Copyright (c) 2005-2024 Broadcom. All Rights Reserved. The term "Broadcom" refers to Broadcom Inc. and/or its subsidiaries.
 Dec 26 11:03:04 localhost rabbitmq-server[968]: ##########  Licensed under the MPL 2.0. Website: https://www.rabbitmq.com/
 Dec 26 11:03:04 localhost rabbitmq-server[968]: ######  ##
 Dec 26 11:03:04 localhost rabbitmq-server[968]: ##########  Logs: /var/log/rabbitmq/rabbit@localhost.log

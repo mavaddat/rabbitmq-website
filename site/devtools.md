@@ -1,5 +1,5 @@
 <!--
-Copyright (c) 2007-2023 VMware, Inc. or its affiliates.
+Copyright (c) 2005-2024 Broadcom. All Rights Reserved. The term "Broadcom" refers to Broadcom Inc. and/or its subsidiaries.
 
 All rights reserved. This program and the accompanying materials
 are made available under the terms of the under the Apache License,
@@ -59,9 +59,10 @@ Client libraries:
 
 Higher level frameworks:
 
- * [EasyNetQ](http://easynetq.com), an easy to use, opinionated .NET API for RabbitMQ
  * [NServiceBus](http://particular.net/nservicebus), the most popular open-source service bus for .NET.
  * [Brighter](https://www.goparamore.io/), a Command Processor & Dispatcher implementation with support for task queues
+ * [Cambion](https://cambion.whitestone.no/), an MIT licensed open-source distributed application framework for .NET
+ * [EasyNetQ](http://easynetq.com), an easy to use, opinionated .NET API for RabbitMQ
  * [MassTransit](https://masstransit.io/), an open-source distributed application framework for .NET.
 
 Miscellaneous projects:
@@ -85,12 +86,14 @@ Miscellaneous projects:
 
  * &#x2713; [pika](http://pypi.python.org/pypi/pika), a pure-Python AMQP 0-9-1 client ([source code](https://github.com/pika/pika),
    [API reference](http://readthedocs.org/docs/pika/en/latest/index.html))
- * [rstream](https://github.com/qweeze/rstream): RabbitMQ Stream Python client
+ * &#x2713; [rstream](https://github.com/qweeze/rstream): RabbitMQ Stream Python client
  * [rbfly](https://gitlab.com/wrobell/rbfly): RabbitMQ Stream Python client
  * [aio-pika](https://github.com/mosquito/aio-pika), a pure-Python AMQP 0-9-1 client built for Python 3 and asyncio ([source code](https://github.com/mosquito/aio-pika),
    [API reference](https://aio-pika.readthedocs.org/))
  * [aioamqp](https://pypi.org/project/aioamqp/), a pure-Python AMQP 0-9-1 library using asyncio ([source code](https://github.com/Polyconseil/aioamqp),
    [docs](https://aioamqp.readthedocs.io/en/latest/))
+ * [FastStream](https://pypi.org/project/faststream/), a powerful and easy-to-use Python library for building asynchronous services that interact with event streams. ([source code](https://github.com/airtai/faststream), [docs](https://faststream.airt.ai))
+ * [amqp-client-python](https://pypi.org/project/amqp-client-python/), Client with high level of abstraction for manipulation of messages in the event bus RabbitMQ. ([source code](https://github.com/nutes-uepb/amqp-client-python), [docs](https://nutes-uepb.github.io/amqp-client-python/))
 
 Miscellaneous projects:
 
@@ -150,6 +153,10 @@ Miscellaneous projects:
 
  * [amqp-client](https://github.com/cloudamqp/amqp-client.cr), an AMQP 0-9-1 client for Crystal
 
+## <a id="julia-dev" class="anchor" href="#julia-dev">Julia</a>
+
+ * [AMQPClient.jl](https://github.com/JuliaComputing/AMQPClient.jl), an AMQP 0-9-1 client for Julia
+
 ## <a id="alt-jvm-dev" class="anchor" href="#alt-jvm-dev">Other JVM Languages</a>
 
 ### Scala
@@ -184,6 +191,8 @@ Miscellaneous projects:
  * [SimpleAmqpClient](https://github.com/alanxz/SimpleAmqpClient), a C++ wrapper around rabbitmq-c
  * [amqpcpp](https://github.com/akalend/amqpcpp), a C++ message library for RabbitMQ
  * [AMQP-CPP](https://github.com/CopernicaMarketingSoftware/AMQP-CPP), a C++ RabbitMQ client
+ * [RabbitMQ C stream client](https://github.com/GianfrancoGGL/rabbitmq-stream-c-client)
+ * [rmqcpp](https://github.com/bloomberg/rmqcpp), reliable message delivery ON by default, easy to use, testable, async-capable C++ API
 
 
 ## <a id="monitoring-tools" class="anchor" href="#monitoring-tools">Monitoring</a>
@@ -223,7 +232,7 @@ Miscellaneous projects:
 
 * [Chef RabbitMQ Cookbook](https://github.com/rabbitmq/chef-cookbook)
 * [Puppet RabbitMQ Module](https://github.com/puppetlabs/puppetlabs-rabbitmq)
-* [RabbitMQ Docker image](https://registry.hub.docker.com/_/rabbitmq/)
+* [RabbitMQ Docker image](https://hub.docker.com/_/rabbitmq/)
 * [Kurtosis Starlark package](https://github.com/kurtosis-tech/rabbitmq-package)
 
 ## <a id="database-integration" class="anchor" href="#database-integration">Database Integration</a>

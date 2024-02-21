@@ -1,5 +1,5 @@
 <!--
-Copyright (c) 2007-2023 VMware, Inc. or its affiliates.
+Copyright (c) 2005-2024 Broadcom. All Rights Reserved. The term "Broadcom" refers to Broadcom Inc. and/or its subsidiaries.
 
 All rights reserved. This program and the accompanying materials
 are made available under the terms of the under the Apache License,
@@ -28,10 +28,12 @@ do not mesh well with the use of a configuration file:
 
 RabbitMQ calls these items _parameters_. Parameters can be
 set by invoking [`rabbitmqctl`](man/rabbitmqctl.8.html)
-or through [the management plugin](management.html)'s HTTP API.
-There are 2 kinds of parameters: vhost-scoped parameters and global parameters.
+or through [the HTTP API](management.html).
+
+There are two kinds of parameters: vhost-scoped parameters and global parameters.
 Vhost-scoped parameters are tied to a virtual host and consist
 of a component name, a name and a value.
+
 Global parameters are not tied to a particular virtual host and they consist
 of a name and value.
 
@@ -43,6 +45,16 @@ as plugins such as [Federation](federation.html)
 and [Shovel](shovel.html).
 
 Policies are vhost-scoped.
+
+[Operator policies](#operator-policies) allow cluster operators override certain arguments
+defined in regular policies. This special policy type was designed for defining
+guardrails, for example, limiting maximum queue size, enforcing a quorum queue and stream
+initial replication factor, and so on.
+
+Operator policies are particularly important in environments where RabbitMQ is offered
+as a service, that is, where it is operated by one team but consumed by multiple other
+teams or external customers.
+
 
 ## <a id="parameter-management" class="anchor" href="#parameter-management">Global and Per-vhost Parameters</a>
 
@@ -397,18 +409,85 @@ Because operator policies can unexpectedly change queue
 attributes and, in turn, application assumptions and
 semantics, they are limited only to a few arguments:
 
- * expires
- * message-ttl
- * max-length
- * max-length-bytes
-
-The arguments above are all numeric. The reason for that is explained
-in the following section.
+<table>
+  <thead>
+    <td></td>
+    <td><strong>Classic</strong></td>
+    <td><strong>Quorum</strong></td>
+    <td><strong>Stream</strong></td>
+  </thead>
+  <tr>
+    <th>delivery-limit</th>
+    <td> </td>
+    <td> <span>&#10003;</span> </td>
+    <td> </td>
+  </tr>
+  <tr>
+    <th>expires</th>
+    <td> <span>&#10003;</span> </td>
+    <td> <span>&#10003;</span> </td>
+    <td> </td>
+  </tr>
+  <tr>
+    <th>ha-mode</th>
+    <td> <span>&#10003;</span> </td>
+    <td> </td>
+    <td> </td>
+  </tr>
+  <tr>
+    <th>ha-params</th>
+    <td> <span>&#10003;</span> </td>
+    <td> </td>
+    <td> </td>
+  </tr>
+  <tr>
+    <th>ha-sync-mode</th>
+    <td> <span>&#10003;</span> </td>
+    <td> </td>
+    <td> </td>
+  </tr>
+  <tr>
+    <th>max-in-memory-bytes</th>
+    <td> </td>
+    <td> <span>&#10003;</span> </td>
+    <td> </td>
+  </tr>
+  <tr>
+    <th>max-in-memory-length</th>
+    <td> </td>
+    <td> <span>&#10003;</span> </td>
+    <td> </td>
+  </tr>
+  <tr>
+    <th>max-length</th>
+    <td> <span>&#10003;</span> </td>
+    <td> <span>&#10003;</span> </td>
+    <td> </td>
+  </tr>
+  <tr>
+    <th>max-length-bytes</th>
+    <td> <span>&#10003;</span> </td>
+    <td> <span>&#10003;</span> </td>
+    <td> <span>&#10003;</span> </td>
+  </tr>
+  <tr>
+    <th>message-ttl</th>
+    <td> <span>&#10003;</span> </td>
+    <td> <span>&#10003;</span> </td>
+    <td> </td>
+  </tr>
+  <tr>
+    <th>target-group-size</th>
+    <td> </td>
+    <td> <span>&#10003;</span> </td>
+    <td> </td>
+  </tr>
+</table>
 
 ### <a id="operator-policy-conflicts" class="anchor" href="#operator-policy-conflicts">Conflict Resolution with Regular Policies</a>
 
-An operator policy and a regular one can contain the same
-keys in their definitions. When it happens, the smaller
+An operator policy and a regular policy can contain the same
+keys in their definitions. When it happens, the more conservative
 value is chosen as effective. For example, if a matching
 operator policy definition sets `max-length` to
 50 and a matching regular policy definition uses the value of 100,
@@ -416,6 +495,154 @@ the value of 50 will be used. If, however, regular policy's value
 was 20, it would be used. Operator policies, therefore, don't
 just overwrite regular policy values. They enforce limits but
 try to not override user-provided policies where possible.
+
+<table>
+    <thead>
+        <td></td>
+        <td><strong>Classic</strong></td>
+        <td><strong>Quorum</strong></td>
+        <td><strong>Stream</strong></td>
+    </thead>
+    <tr>
+        <th>delivery-limit</th>
+        <td> </td>
+        <td>
+            <ul>
+                <li>lesser value</li>
+            </ul>
+        </td>
+        <td> </td>
+    </tr>
+    <tr>
+        <th>expires</th>
+        <td>
+            <ul>
+                <li>lesser value</li>
+            </ul>
+        </td>
+        <td>
+            <ul>
+                <li>lesser value of the two policies</li>
+                <li>policy precedence over queue arguments</li>
+            </ul>
+        </td>
+        <td> </td>
+    </tr>
+    <tr>
+        <th>ha-mode</th>
+        <td>
+          The order of preference:
+
+          <ol>
+            <li>all</li>
+            <li>exactly</li>
+            <li>nodes</li>
+          </ol>
+        </td>
+        <td> </td>
+        <td> </td>
+    </tr>
+    <tr>
+        <th>ha-params</th>
+        <td>
+          <ul>
+            <li>greater value when both values are integers</li>
+            <li>integer value when only one value is an integer</li>
+            <li>longer list when both values are a list of nodes</li>
+            <li>operator policy value when both values are an equal length list of nodes</li>
+          </ul>
+        </td>
+        <td> </td>
+        <td> </td>
+    </tr>
+    <tr>
+        <th>ha-sync-mode</th>
+        <td>
+            <ul>
+                <li>operator policy value</li>
+            </ul>
+        </td>
+        <td> </td>
+        <td> </td>
+    </tr>
+    <tr>
+        <th>max-in-memory-bytes</th>
+        <td> </td>
+        <td>
+            <ul>
+                <li>lesser value</li>
+            </ul>
+        </td>
+        <td> </td>
+    </tr>
+    <tr>
+        <th>max-in-memory-length</th>
+        <td> </td>
+        <td>
+            <ul>
+                <li>lesser value</li>
+            </ul>
+        </td>
+        <td> </td>
+    </tr>
+    <tr>
+        <th>max-length</th>
+        <td>
+            <ul>
+                <li>lesser value</li>
+            </ul>
+        </td>
+        <td>
+            <ul>
+                <li>lesser value</li>
+            </ul>
+        </td>
+        <td> </td>
+    </tr>
+    <tr>
+        <th>max-length-bytes</th>
+        <td>
+            <ul>
+                <li>lesser value</li>
+            </ul>
+        </td>
+        <td>
+            <ul>
+                <li>lesser value</li>
+            </ul>
+        </td>
+        <td>
+            <ul>
+                <li>lesser value of the two policies</li>
+                <li>policy precedence over queue arguments</li>
+            </ul>
+        </td>
+    </tr>
+    <tr>
+        <th>message-ttl</th>
+        <td>
+            <ul>
+                <li>lesser value</li>
+            </ul>
+        </td>
+        <td>
+            <ul>
+                <li>lesser value</li>
+            </ul>
+        </td>
+        <td> </td>
+    </tr>
+    <tr>
+        <th>target-group-size</th>
+        <td> </td>
+        <td>
+            <ul>
+                <li>greater value</li>
+            </ul>
+        </td>
+        <td> </td>
+    </tr>
+</table>
 
 When the same key is provided by both [client-provided `x-arguments`](./queues.html#optional-arguments) and by a user policy,
 the former take precedence.
@@ -492,3 +719,13 @@ PUT /api/operator-policies/%2f/transient-queue-ttl
         </td>
     </tr>
 </table>
+
+### <a id="disable-operator-policy-changes" class="anchor" href="#disable-operator-policy-changes">How to Disable Operator Policy Changes</a>
+
+Modification of operator policies via the HTTP API and Web UI can be disabled
+in configuration. This makes operator policies read-only for all users via the
+HTTP API and Web UI.
+
+<pre class="lang-ini">
+management.restrictions.operator_policy_changes.disabled = true
+</pre>
