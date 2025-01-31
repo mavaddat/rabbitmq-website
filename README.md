@@ -1,141 +1,136 @@
-# [rabbitmq.com](https://www.rabbitmq.com/)
+# Website
 
-This repository contains source code for [rabbitmq.com](https://www.rabbitmq.com/) content.
+This repository contains the source code of the RabbitMQ website, rabbitmq.com.
+**Please make sure to read the Workflow section before contributing**.
 
-All changes that need to be deployed right away need to be committed to the `live` branch.
+## Workflow
 
-Changes which should be deployed when the next patch release (a.k.a. stable) of RabbitMQ ships should be committed to the `stable` branch.
+### TL;DR
 
-Changes which should be deployed when the next minor release (a.k.a. main) of RabbitMQ ships should be committed to the `main` branch.
+This repository contains documentation guides for multiple RabbitMQ release series.
+At the moment they are `4.1.x` (in development(, `4.0.x`, and `3.13.x`.
 
-## Branches
+Therefore, the very first question to consder before making any changes is:
+what versions does my change apply to? Should I update just the `4.1.x` version,
+all `4.x` ones or even `3.13.x`?
 
-There are a few noteworthy and long-lived named branches in this
-repository:
+Here is a summary of which version of the documentation corresponds to which
+branch and directory:
 
-Branch        | Description
-:-------------|:--------------------
-`live`         | The current version of the website. This must represent whatever's deployed to [www.rabbitmq.com](https://www.rabbitmq.com/).
-`stable`       | Changes to the website that will correspond to the next point (maintenance) release of RabbitMQ. This gets merged into live when a patch release occurs.
-`main`       | Changes to the website that will correspond to the next minor release of RabbitMQ. Periodically deployed to [next.rabbitmq.com](http://next.rabbitmq.com/). This gets merged into stable and then live when a minor release occurs.
+| Version of RabbitMQ | Branch | Sub-directory | Served at |
+|---------------------|--------|---------------|-----------|
+| Development version (4.1) | [`main`](https://github.com/rabbitmq/rabbitmq-website/tree/main) | `docs` | [`www.rabbitmq.com/docs/next`](https://www.rabbitmq.com/docs/next) |
+| 4.0 | [`main`](https://github.com/rabbitmq/rabbitmq-website/tree/main) | `versioned_docs/version-4.0` | [`www.rabbitmq.com/docs`](https://www.rabbitmq.com/docs) |
+| 3.13 | [`main`](https://github.com/rabbitmq/rabbitmq-website/tree/main) | `versioned_docs/version-3.13` | [`www.rabbitmq.com/docs/3.13`](https://www.rabbitmq.com/docs/3.13) |
+| 3.12 | [`v3.12.x`](https://github.com/rabbitmq/rabbitmq-website/tree/v3.12.x) | root | [`v3-12.rabbitmq.com`](https://v3-12.rabbitmq.com/documentation.html) |
 
+### Branches and versioning
 
-## Development environment
+The `main` branch is the production branch. Commits to it are deployed
+automatically to www.rabbitmq.com by a Cloudflare worker.
 
-### Running a Local Copy
+We keep several versions of the docs in the `main` branch. Docusaurus uses the
+following directories:
 
-The site requires Python 3.6 or later, `lxml` and Markdown libraries for development. It also
-assumes Apache 2.x is used for deployment. [pyenv](https://github.com/pyenv/pyenv)
-can be used to install the appropriate Python version without affecting the system version(s).
+* `docs` contains the docs of the future version of RabbitMQ, thus it is the
+  work in progress. It is served at https://www.rabbitmq.com/docs/next.
+* `versioned_docs` contains one directory per version; for example,
+  `versioned_docs/version-4.0`. The latest version is served at
+  https://www.rabbitmq.com/docs. Older versions are served at
+  `…/docs/$version`.
 
-When using OS native package managers be aware that Python packages
-can be out-of-date.
+Changes should be made to `docs` and to any version they apply. Here is an
+example:
 
-#### On MacOS
+```
+# Make changes to the future version’s docs.
+$EDITOR docs/configure.md
 
-On a recent MacOS version with [Homebrew](http://brew.sh/) it should be enough to run
+# Test the change in a browser.
+npm start
 
-```sh
-make preview
+# Once happy, apply to the relevant older release series
+cd versioned_docs/version-4.0
+git diff ../../docs | patch -p2
+
+# Test again in a browser.
+npm start
+
+# Commit everything.
+git add docs versioned_docs
+git commit
 ```
 
-to install the dependencies and run a local copy on [localhost:8191](http://localhost:8191)
+Please read the [documentation of Versioning in Docusaurus](https://docusaurus.io/docs/versioning) to learn more.
 
-It is also possible to install the dependencies manually:
+Older versions of the docs that we don’t want to host in Docusaurus to limit
+the number of versions are put in branches of the form `v3.13.x`, `v4.0.x`,
+etc. These branches are deployed automatically too and they use domain names of
+the form `v3-13.rabbitmq.com`, `v4-0.rabbitmq.com`, etc. respectively. Note
+that these branches used as examples may not exist yet if the corresponding
+docs are still maintained in the `main` branch.
 
-```sh
-brew install python
-pip install lxml markdown
+`v3.12.x` is a bit special in the sense that it is using the old static website
+generator. This one is deployed by GitHub Actions to a Cloudflare worker. It is
+available at https://v3-12.rabbitmq.com.
+
+### How to build
+
+This website is built using [Docusaurus 3](https://docusaurus.io/), a modern
+static website generator.
+
+#### Installation
+
+You need to install JS components used by Docusaurus first with `yarn` or `npm`.
+The examples below use `npm`.
+
+``` shell
+# for NPM users
+npm install
 ```
 
-Using the system Python, dependencies must be installed differently:
+You need to do this once only.
 
-```sh
-sudo easy_install pip
-sudo pip install lxml markdown
+### Local Development
+
+The following command starts a local development server and opens up a default browser
+window. Most changes are reflected live without having to restart the server.
+
+``` shell
+npm start
 ```
 
-To run a local copy manually on [localhost:8191](http://localhost:8191), use:
+To use a different browser, for example, Brave Beta, set the `BROWSER` env variable
+when running `npm start`:
 
-```sh
-./driver.py
+``` shell
+BROWSER="Brave Beta" npm start
 ```
 
-To run a local copy of the "next" version of the site (usually only relevant for `main` and
-documentation work for the next feature release):
+### Build
 
-```sh
-./driver.py next
+The following command generates static content into the `build` directory and
+can be served using any static contents hosting service.
+
+``` shell
+npm run build
 ```
 
-#### On Debian-based Linux
-
-On Debian and Ubuntu dependencies can be installed via `apt`:
-
-```sh
-sudo apt-get install python3-lxml python3-markdown python3-pygments
-```
-
-To run a local copy manually on [localhost:8191](http://localhost:8191), use:
-
-```sh
-./driver.py [www|next|previous]
-```
-
-#### Run in a python virtual environment
-
-Use [Python virtual environment](https://docs.python.org/3/library/venv.html) to avoid global libraries.
-
-```sh
-python3 -m venv .venv
-source .venv/bin/activate
-pip install lxml markdown
-/driver.py [www|next|previous]
-```
-
-
-#### Limitations of Local Copy
-
-Note that when running a local copy the site will not feature:
-
- * Any release artefacts (such as Web versions of the man pages)
- * The blog
-
-
-### Modes
-
-The website also has the concept of being deployed in modes. The three
-modes are:
-
-Mode     | Description
-:--------|:------------
-www      | This is the "normal" mode. You would normally deploy from the live branch with this mode.
-next     | This is the mode for [next.rabbitmq.com](http://next.rabbitmq.com/). This mode has the home page and download page chopped down, no blog or search, and a watermark. You would normally deploy from the main branch with this mode.
-previous | For [previous.rabbitmq.com](http://previous.rabbitmq.com/). The website is reduced in the same way as "next", but this mode is meant for previous releases rather than future releases.
-
-You determine which mode you are using with an argument to the driver
-or deploy scripts. Modes are implemented with the `<x:modal/>` tag and
-the `$page-mode` variable in XSLT.
-
-### Tutorial Charts (Diagrams)
-
-[diagrams.py](https://github.com/rabbitmq/rabbitmq-website/blob/main/code/diagrams.py) is a script that generates PNGs from graph descriptions
-embedded in files. Generally, you don't need to run this, since the generated
-PNGs are committed. To work on the diagrams please install Graphviz:
-
-```sh
-sudo apt-get install graphviz
-```
-
-### Generating the Atom Feed
-
-To generate the `site/news.atom` feed, run the following command:
-
-```sh
-xsltproc --novalid site/feed-atom.xsl site/news.xml > site/news.atom
-```
-
+This is important to run this command before pushing changes to GitHub to make
+sure the build is successful. This is the command that will be used to deploy
+the website in production.
 
 ## Copyright and License
 
-See [NOTICE](NOTICE) and [LICENSE](LICENSE).
+© 2007-2025 Broadcom. All Rights Reserved. The term "Broadcom" refers to
+Broadcom Inc. and/or its subsidiaries.
+
+<img align="right" width="180" src="http://mirrors.creativecommons.org/presskit/buttons/88x31/svg/by-nc-nd.eu.svg">
+
+The RabbitMQ documentation is dual-licensed under the Apache License 2.0 and
+the Mozilla Public License 2.0. Users can choose any of these licenses
+according to their needs. However, **the blog is excluded from this license and
+remains the intellectual property of Broadcom Inc.** Blog posts may not be
+restributed.
+
+SPDX-License-Identifier: Apache-2.0 OR MPL-2.0
