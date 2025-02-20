@@ -1,0 +1,218 @@
+/**
+ * CSS files with the .module.css suffix will be treated as CSS modules
+ * and scoped locally.
+ */
+
+.container {
+  margin: 0 auto;
+  max-width: 1100px;
+  padding: 0 20px;
+  scroll-padding-top: 60px;
+}
+
+/*.container h1:after {
+  content:"";
+  display: block;
+  width: 130px;
+  margin-top: 8px;
+  margin-bottom: 1em;
+  border-bottom: 5px solid var(--ifm-color-primary);
+}
+
+.hero .container h1:after {
+  display: none;
+}*/
+
+.hero {
+  background-color: var(--ifm-color-hero-background);
+  padding: 48px;
+
+  --ifm-button-size-multiplier: 1.6;
+}
+
+.heroInner {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  gap: 2em;
+}
+
+.hero h1 {
+  color: var(--ifm-color-content-inverse);
+  font-size: 4em;
+  margin: 0px;
+}
+
+.hero .tagline {
+  color: var(--ifm-color-content-inverse);
+  font-size: var(--ifm-h1-font-size);
+  margin: 0px;
+}
+
+.hero .heroCta {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1em;
+}
+
+html[data-theme='dark'] .heroCta a:first-child {
+  background-color: var(--ifm-font-color-base);
+}
+
+.heroCta .release_notes_link {
+  font-size: var(--ifm-h3-font-size);
+  font-weight: var(--ifm-heading-font-weight);
+}
+
+html[data-theme='dark'] .heroCta .release_notes_link {
+  color: var(--ifm-font-color-base);
+}
+
+@media only screen and (max-width: 768px) {
+  .hero {
+    padding-left: 20px;
+    padding-right: 20px;
+
+    --ifm-button-size-multiplier: 1.2;
+  }
+
+  .heroInner {
+    flex-direction: column;
+    padding: 0;
+  }
+
+  .hero h1 {
+    text-align: center;
+  }
+
+  .hero .tagline {
+    font-size: 36px;
+    text-align: center;
+  }
+
+  .hero .heroCta {
+    margin: 0px auto;
+  }
+}
+
+.flex_columns {
+  margin-top: 2em;
+
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: flex-start;
+  align-content: center;
+  gap: 2em;
+}
+
+.flex_columns section {
+  width: 100%;
+}
+
+@media only screen and (max-width: 768px) {
+  .flex_columns {
+    flex-direction: column;
+    gap: 0em;
+  }
+}
+
+.why, .license, .usecases_heading, .usecases, .testimonies, .supporttypes, .partners {
+  padding: 2em 0px;
+  scroll-margin-top: 60px;
+}
+
+.usecases_heading, .license {
+  background-color: var(--ifm-color-primary-contrast-background);
+
+}
+
+.usecases .flex_columns {
+  align-content: center;
+}
+
+.usecases .flex_columns section:last-child {
+  align-self: center;
+}
+
+.usecases svg {
+  display: block;
+}
+
+.license section svg {
+  display: block;
+  margin-top: var(--ifm-heading-margin-top);
+  margin-bottom: var(--ifm-heading-margin-bottom);
+}
+
+.testimonies .flex_columns {
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 4em;
+}
+
+.testimonies .flex_columns section {
+  width: 420px;
+}
+
+.blockquote {
+  position: relative;
+}
+
+.blockquote blockquote {
+  margin: 0;
+  border: 1px solid #0C2D57;
+  border-radius:20px;
+  padding: 15px;
+}
+
+.blockquote blockquote:before {
+  content:"";
+  position: absolute;
+  width: 80px;
+  border: 3px solid var(--ifm-color-white);
+  bottom: 32px;
+  left: 50px;
+  z-index: 2;
+}
+
+.blockquote blockquote:after {
+  content:"";
+  position: absolute;
+  border: 1px solid #0C2D57;
+  border-radius: 0 40px 0 0;
+  width: 60px;
+  height: 40px;
+  bottom: -6px;
+  left: 50px;
+  border-bottom: none;
+  border-left: none;
+  z-index: 3;
+}
+
+html[data-theme='dark'] .blockquote blockquote {
+  border-color: var(--ifm-color-primary-contrast-background);
+}
+
+html[data-theme='dark'] .blockquote blockquote:before {
+  border-color: var(--ifm-background-color);
+}
+
+html[data-theme='dark'] .blockquote blockquote:after {
+  border-color: var(--ifm-color-primary-contrast-background);
+}
+
+.blockquote .attribution {
+  white-space: nowrap;
+
+  position: relative;
+  line-height: 1.2;
+  margin: 0;
+  padding-top: 15px;
+  z-index: 1;
+  margin-left:130px;
+  padding-left:12px;
+}

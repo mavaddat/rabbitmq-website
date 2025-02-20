@@ -1,0 +1,506 @@
+/**
+ * Any CSS included here will be global. The classic template
+ * bundles Infima by default. Infima is a CSS framework designed to
+ * work well for content-centric websites.
+ */
+
+/* You can override the default Infima variables here. */
+:root {
+  --ifm-color-primary: #ff6600;
+  --ifm-color-primary-dark: #e65c00;
+  --ifm-color-primary-darker: #d95700;
+  --ifm-color-primary-darkest: #b34700;
+  --ifm-color-primary-light: #ff751a;
+  --ifm-color-primary-lighter: #ff7d26;
+  --ifm-color-primary-lightest: #ff944d;
+
+  --ifm-color-hero-background: #0c2d57;
+  --ifm-color-primary-contrast-background: #fff7f2;
+
+  --ifm-font-family-base: 'Raleway';
+  --ifm-code-font-size: 95%;
+  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.1);
+}
+
+/* For readability concerns, you should choose a lighter palette in dark mode. */
+html[data-theme='dark'] {
+  --ifm-color-primary: #ff6600;
+  --ifm-color-primary-dark: #e65c00;
+  --ifm-color-primary-darker: #d95700;
+  --ifm-color-primary-darkest: #b34700;
+  --ifm-color-primary-light: #ff751a;
+  --ifm-color-primary-lighter: #ff7d26;
+  --ifm-color-primary-lightest: #ff944d;
+
+  --ifm-color-hero-background: var(--ifm-color-primary);
+  --ifm-color-primary-contrast-background: #444b58;
+
+  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
+}
+
+article h2,
+article h3 {
+  clear: both;
+}
+
+/* Images/figures and captions. */
+figure {
+  width: fit-content;
+}
+
+figure img,
+figure svg,
+figure div.figure {
+  border: 1px solid var(--ifm-toc-border-color);
+}
+
+figure.without-borders img,
+figure.without-borders svg,
+figure.without-borders div.figure {
+  border: none;
+}
+
+figure figcaption {
+  font-style: italic;
+}
+
+figure div.figure {
+  padding: 10px;
+}
+
+[data-theme='light'] img[src$='#gh-dark-mode-only'],
+[data-theme='dark'] img[src$='#gh-light-mode-only'] {
+  display: none;
+}
+
+/* Search field in the top menu. */
+.DocSearch-Button-Placeholder {
+  font-family: var(--ifm-font-family-base);
+}
+
+/* Mermaid diagrams styling. */
+.mermaid-producer > circle,
+.mermaid-producer > rect {
+  fill: #a9def9 !important;
+  stroke: var(--ifm-color-gray-800) !important;
+}
+
+html[data-theme='dark'] .mermaid-producer > circle,
+html[data-theme='dark'] .mermaid-producer > rect {
+  fill: #003d5b !important;
+  stroke: var(--ifm-color-gray-200) !important;
+}
+
+.mermaid-exchange > polygon {
+  fill: #fae0e4 !important;
+  stroke: var(--ifm-color-gray-800) !important;
+}
+
+html[data-theme='dark'] .mermaid-exchange > polygon {
+  fill: #a4133c !important;
+  stroke: var(--ifm-color-gray-200) !important;
+}
+
+.mermaid-queue > polygon {
+  fill: #ede7b1 !important;
+  stroke: var(--ifm-color-gray-800) !important;
+}
+
+html[data-theme='dark'] .mermaid-queue > polygon {
+  fill: #926c15 !important;
+  stroke: var(--ifm-color-gray-200) !important;
+}
+
+.mermaid-consumer > circle,
+.mermaid-consumer > rect {
+  fill: #d3f8e2 !important;
+  stroke: var(--ifm-color-gray-800) !important;
+}
+
+html[data-theme='dark'] .mermaid-consumer > circle,
+html[data-theme='dark'] .mermaid-consumer > rect {
+  fill: #606c38 !important;
+  stroke: var(--ifm-color-gray-200) !important;
+}
+
+.mermaid-msg > rect {
+  fill: #ced4da !important;
+  stroke: var(--ifm-color-gray-800) !important;
+}
+
+html[data-theme='dark'] .mermaid-msg > rect {
+  fill: #495057 !important;
+  stroke: var(--ifm-color-gray-200) !important;
+}
+
+.mermaid-msg {
+  font-size: smaller !important;
+}
+
+.floating-logo {
+  max-width: 175px;
+  max-height: 175px;
+  float: right;
+}
+
+/* -------------------------------------------------------------------
+ * OneTrust useless cookie icon.
+ * ------------------------------------------------------------------- */
+
+#ot-sdk-btn-floating {
+  display: none;
+}
+
+.ot-sdk-show-settings {
+  cursor: pointer;
+}
+
+.ot-sdk-show-settings:hover {
+  text-decoration: var(--ifm-link-hover-decoration);
+}
+
+/* -------------------------------------------------------------------
+ * Docs introduction page.
+ * ------------------------------------------------------------------- */
+
+/*
+ * The arrow icons were created by krystonschwarze and licensed under the CC-BY
+ * terms. The files were downloaded from svgrepo.com:
+ * - https://www.svgrepo.com/svg/510811/arrow-left-sm
+ * - https://www.svgrepo.com/svg/510834/arrow-up-right-sm
+ *
+ * The files were modified to crop the margins around the arrows.
+ */
+
+.docs-tips-large-screen {
+  display: none;
+}
+
+.docs-tips-small-screen {
+  display: unset;
+}
+
+@media (min-width: 997px) {
+  .docs-tips {
+    margin-top: calc(var(--ifm-h2-vertical-rhythm-top) * var(--ifm-leading));
+
+    display: flex;
+    flex-direction: row-reverse;
+    gap: 1em;
+  }
+
+  .docs-tips div {
+    background-repeat: no-repeat;
+    background-position: top 3px left;
+    background-size: var(--ifm-h2-font-size);
+    padding-left: calc(var(--ifm-h2-font-size) + 20px);
+  }
+
+  .docs-tip-version-menu {
+    background-image: url("/img/arrow-up-right.svg");
+  }
+
+  .docs-tip-toc-menu {
+    background-image: url("/img/arrow-left.svg");
+  }
+
+  .docs-tips-large-screen {
+    display: unset;
+  }
+
+  .docs-tips-small-screen {
+    display: none;
+  }
+}
+
+.name-description tr td:nth-child(1) {
+  font-size: 90%;
+}
+
+/* -------------------------------------------------------------------
+ * Release Information table.
+ * ------------------------------------------------------------------- */
+
+.release-information {
+  --ri-color-latest: #d4f4b4;
+  --ri-color-supported: #fef8c6;
+  --ri-color-unsupported: #fdb3ab;
+  --ri-color-future: #c1e6f5;
+
+  --ri-version-col-width: 76px;
+}
+
+html[data-theme='dark'] .release-information {
+  --ri-color-latest: #3c7700;
+  --ri-color-supported: #b09e00;
+  --ri-color-unsupported: #880d00;
+  --ri-color-future: #005c82;
+}
+
+.release-info-overflow {
+  overflow: scroll;
+}
+
+.release-info-grid {
+  display: grid;
+  grid-template-columns:
+    [toggle] 24px
+    [branch] calc(var(--ri-version-col-width) - 24px)
+    [version] var(--ri-version-col-width)
+    [links] auto
+    [reldate] 120px
+    [eos-community] 120px
+    [eos-commercial] 120px
+    [end];
+  grid-template-rows: auto;
+
+  margin-bottom: var(--ifm-spacing-vertical);
+  border: var(--ifm-table-border-width) solid var(--ifm-table-border-color);
+  min-width: min-content;
+}
+
+.release-info-grid div {
+  border: 0px solid var(--ifm-table-border-color);
+  padding: calc(var(--ifm-table-cell-padding) / 2);
+  white-space: nowrap;
+}
+
+.release-info-grid div.release-info-header {
+  white-space: normal;
+}
+
+.release-links ul {
+  display: flex;
+  margin: 0;
+  padding-left: 0;
+}
+
+.release-links ul > li {
+  display: inline-block;
+  list-style-type: none;
+  margin-left: var(--ifm-table-cell-padding);
+}
+
+.release-links ul > li + li {
+  margin-top: 0;
+  margin-left: 0.5em;
+  padding-left: 0.5em;
+  border-left: var(--ifm-table-border-width) solid var(--ifm-table-border-color);
+}
+
+.release-link svg {
+  display: block;
+  width: 24px;
+  height: 24px;
+  margin: auto;
+}
+
+.release-link svg path {
+  fill: var(--ifm-menu-color-active);
+}
+
+.release-link span {
+  display: none;
+}
+
+.release-info-grid .release-toggle {
+  grid-column: 1 / span 1;
+  justify-self: stretch;
+  align-self: stretch;
+
+  padding: 0;
+  border-top-width: var(--ifm-table-border-width);
+}
+
+.release-info-grid .release-branch {
+  grid-column: 2 / span 1;
+
+  border-top-width: var(--ifm-table-border-width);
+}
+
+.release-info-grid .release-version {
+  grid-column: 3 / span 1;
+
+  border-top-width: var(--ifm-table-border-width);
+  border-left-width: var(--ifm-table-border-width);
+}
+
+.release-info-grid .release-links {
+  grid-column: 4 / span 1;
+
+  border-top-width: var(--ifm-table-border-width);
+  border-left-width: var(--ifm-table-border-width);
+}
+
+.release-info-grid .release-reldate {
+  grid-column: 5 / span 1;
+
+  border-top-width: var(--ifm-table-border-width);
+  border-left-width: var(--ifm-table-border-width);
+}
+
+.release-info-grid .release-eos {
+  border-top-width: var(--ifm-table-border-width);
+  border-left-width: var(--ifm-table-border-width);
+}
+
+.release-info-grid .release-eos-community {
+  grid-column: 6 / span 1;
+}
+
+.release-info-grid .release-toggle {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.release-info-grid .release-toggle svg {
+  display: block;
+  cursor: pointer;
+  transition: transform var(--ifm-transition-fast) ease;
+}
+
+.release-info-grid .release-toggle.show-release svg {
+  transform: rotate(90deg);
+}
+
+html[data-theme='dark'] .release-info-grid .release-toggle path {
+  fill: var(--ifm-font-color-base) !important;
+}
+
+.release-info-grid .show-release:not(.release-toggle) {
+  display: block;
+}
+
+.release-info-grid .hide-release:not(.release-toggle) {
+  display: none;
+}
+
+.release-info-header {
+  font-weight: bold;
+  text-align: center;
+  justify-self: stretch;
+  background-color: var(--ifm-table-stripe-background);
+  border-top-width: 0 !important;
+}
+
+.release-info-header.release-branch {
+  grid-column: 1 / span 2;
+}
+
+.release-info-header.release-version {
+  grid-column: 3 / span 2;
+}
+
+.release-info-grid .supported-release {
+  background-color: var(--ri-color-supported);
+}
+
+.release-info-grid .supported-release.latest-release {
+  background-color: var(--ri-color-latest);
+}
+
+.release-info-grid .unsupported-release {
+  background-color: var(--ri-color-unsupported);
+}
+
+.release-info-grid .unsupported-release.future-release {
+  background-color: var(--ri-color-future);
+}
+
+.release-legend {
+  display: grid;
+  grid-template-columns: max-content auto;
+  margin-top: 0;
+  margin-left: 1em;
+}
+
+.release-legend dt {
+  grid-column-start: 1;
+  width: 1em;
+  height: 1em;
+  border: var(--ifm-table-border-width) solid var(--ifm-table-border-color);
+  margin-top: 0.4em;
+}
+
+.release-legend dt.supported-release {
+  background-color: var(--ri-color-supported);
+}
+
+.release-legend dt.latest-release {
+  background-color: var(--ri-color-latest);
+}
+
+.release-legend dt.unsupported-release {
+  background-color: var(--ri-color-unsupported);
+}
+
+.release-legend dt.future-release {
+  background-color: var(--ri-color-future);
+}
+
+.release-legend dd {
+  grid-column-start: 2;
+  margin-left: 0.5em;
+}
+
+@media (min-width: 1440px) {
+  .release-information {
+    --ri-version-col-width: 100px;
+  }
+
+  .release-link svg {
+    display: none;
+  }
+
+  .release-link span {
+    display: inline;
+  }
+
+  .release-info-grid .release-eos-community {
+    grid-column: 6 / span 1;
+  }
+
+  .release-info-grid .release-eos-commercial {
+    grid-column: 7 / span 1;
+  }
+}
+
+/* -------------------------------------------------------------------
+ * Trademark guildelines page.
+ * ------------------------------------------------------------------- */
+
+.logos-gallery {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.logos-gallery img {
+  display: block;
+  height: 35px;
+  border: none;
+  margin: 0px auto;
+}
+
+.logos-gallery figcaption {
+  text-align: center;
+}
+
+.logos-gallery p {
+  margin: 0.5em 0px;
+}
+
+.logos-gallery a {
+  font-style: normal;
+}
+
+@media (min-width: 997px) {
+  .logos-gallery {
+    flex-direction: row;
+  }
+
+  .logos-gallery img {
+    height: 50px;
+  }
+}
